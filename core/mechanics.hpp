@@ -1,25 +1,24 @@
-module;
+#ifndef SMC_CORE_MECHANICS_HPP
+#define SMC_CORE_MECHANICS_HPP
 
 #include <cstddef>
 #include <cstdint>
 #include <span>
 #include <vector>
 
-export module core:mechanics;
-
-import :model;
+#include "core/model.hpp"
 
 // The mechanics of the mining module, as read from GT5U:
 // TileEntityModuleMiner.java and SpaceMiningRecipes.java. The functions
 // repeat the Java arithmetic step by step, roundings included, so the model
 // matches the game to the last tick.
 
-export namespace core {
+namespace core {
 
 // Bonus draw chance cap, out of 10000.
-constexpr int kMaxBonusChance = 7500;
+inline constexpr int kMaxBonusChance = 7500;
 // Lower bound of the recipe time multiplier.
-constexpr double kMinTimeMultiplier = 0.5;
+inline constexpr double kMinTimeMultiplier = 0.5;
 
 // The recipes of one asteroid, one per drone tier, as addRecipesToDrones
 // adds them. index is the asteroid's place in Catalog::asteroids.
@@ -51,3 +50,5 @@ auto outputHits(std::span<const Output> outputs) -> std::vector<int>;
 auto expectedDraws(const Recipe& recipe, int bonusChance) -> double;
 
 }  // namespace core
+
+#endif  // SMC_CORE_MECHANICS_HPP

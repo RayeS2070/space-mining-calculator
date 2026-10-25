@@ -1,5 +1,5 @@
-# Reads data/asteroids.json into the core model. Boost.JSON stays in the
-# implementation unit: importers of `reader` do not see it.
+# Reads data/asteroids.json into the core model. Boost.JSON stays in
+# reader.cpp: users of reader/reader.hpp do not see it.
 add_library(smc_reader)
 
 # The data goes into the binary at build time, so every platform, the
@@ -12,7 +12,7 @@ add_custom_command(
         COMMAND ${CMAKE_COMMAND}
         -DINPUT=${SMC_ASTEROIDS_JSON}
         -DOUTPUT=${SMC_ASTEROIDS_CPP}
-        -DMODULE=reader
+        -DHEADER=reader/embedded_json.hpp
         -DNAMESPACE=reader
         -DFUNCTION=embeddedJson
         -P ${PROJECT_SOURCE_DIR}/cmake/embed.cmake
@@ -23,9 +23,12 @@ add_custom_command(
 
 target_sources(smc_reader
         PUBLIC
-        FILE_SET CXX_MODULES FILES
-        reader.cppm
+        FILE_SET HEADERS
+        BASE_DIRS ${PROJECT_SOURCE_DIR}
+        FILES
+        reader.hpp
         PRIVATE
+        embedded_json.hpp
         reader.cpp
         ${SMC_ASTEROIDS_CPP}
 )

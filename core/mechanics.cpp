@@ -1,4 +1,4 @@
-module;
+#include "core/mechanics.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -6,8 +6,6 @@ module;
 #include <cstdint>
 #include <span>
 #include <vector>
-
-module core;
 
 namespace core {
 

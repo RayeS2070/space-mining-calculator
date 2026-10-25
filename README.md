@@ -119,7 +119,7 @@ run a different version: check before trusting the numbers.
 
 ## Build
 
-CMake ≥ 3.30, Ninja and a compiler with C++26 and modules support. Dependencies come through
+CMake ≥ 3.30, Ninja and a compiler with C++26 support. Dependencies come through
 [CPM](https://github.com/cpm-cmake/CPM.cmake), SDL3 included; the desktop UI also needs OpenGL and
 the development files SDL builds against (X11 and/or Wayland).
 

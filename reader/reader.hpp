@@ -1,18 +1,17 @@
-module;
+#ifndef SMC_READER_READER_HPP
+#define SMC_READER_READER_HPP
 
 #include <expected>
 #include <filesystem>
 #include <string>
 #include <string_view>
 
-export module reader;
-
-export import core;
+#include "core/model.hpp"
 
 // Reads data/asteroids.json into core::Catalog. Kept out of core: core does
 // no I/O and does not see Boost.JSON.
 
-export namespace reader {
+namespace reader {
 
 // Parses and checks the data. The error names the place, e.g.
 // "$.asteroids[3].outputs[0].chance: expected an integer".
@@ -28,10 +27,4 @@ auto embeddedCatalog() -> std::expected<core::Catalog, std::string>;
 
 }  // namespace reader
 
-namespace reader {
-
-// The text of data/asteroids.json; defined in a TU that cmake/embed.cmake
-// generates at build time.
-auto embeddedJson() -> std::string_view;
-
-}  // namespace reader
+#endif  // SMC_READER_READER_HPP

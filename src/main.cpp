@@ -16,7 +16,10 @@
 #include <utility>
 #include <vector>
 
-import reader;
+#include "core/distance.hpp"
+#include "core/mechanics.hpp"
+#include "core/model.hpp"
+#include "reader/reader.hpp"
 
 namespace po = boost::program_options;
 
@@ -33,9 +36,9 @@ constexpr std::array<const char*, 4> kCommands = {"list", "show", "at",
 constexpr std::size_t kLineWidth = 100;
 constexpr std::string_view kIndent = "   ";
 
-// One table row; the name width comes first.
+// One table row, the name padded by padRight.
 constexpr std::string_view kRowFormat =
-    "{:<{}}  {:>8}  {:>7}  {:>6}  {:>6}  {:>7}  {:>5}  {:>8}  {}";
+    "{}  {:>8}  {:>7}  {:>6}  {:>6}  {:>7}  {:>5}  {:>8}  {}";
 
 // "Coal ore x64 70.0%": the share is the game's exact one, see
 // core::outputHits.
@@ -66,8 +69,17 @@ auto formatRange(const core::DistanceRange& range) -> std::string {
                                 : std::format("{}-{}", range.min, range.max);
 }
 
+// The text left-aligned in the width. Not "{:<{}}": clang 23 with libstdc++ 16
+// rejects every dynamic width in C++26, as the definition of
+// basic_format_parse_context::__check_dynamic_spec comes after its use.
+auto padRight(std::string_view text, std::size_t width) -> std::string {
+  std::string padded(text);
+  padded.resize(std::max(width, text.size()), ' ');
+  return padded;
+}
+
 auto printRow(const core::Asteroid& a, std::size_t nameWidth) -> void {
-  std::println(kRowFormat, a.name, nameWidth,
+  std::println(kRowFormat, padRight(a.name, nameWidth),
                formatRange({.min = a.minDistance, .max = a.maxDistance}),
                std::format("{}-{}", core::kDroneTierNames[a.firstDroneTier],
                            core::kDroneTierNames[a.lastDroneTier]),
@@ -97,8 +109,9 @@ auto printTable(const core::Catalog& catalog, std::span<const std::size_t> rows)
     nameWidth = std::max(nameWidth, catalog.asteroids[i].name.size());
   }
 
-  std::println(kRowFormat, kNameHeader, nameWidth, "distance", "drones",
-               "module", "weight", "size", "ticks", "EU/t", "requires");
+  std::println(kRowFormat, padRight(kNameHeader, nameWidth), "distance",
+               "drones", "module", "weight", "size", "ticks", "EU/t",
+               "requires");
   for (const std::size_t i : rows) printRow(catalog.asteroids[i], nameWidth);
 }
 
@@ -174,6 +187,7 @@ auto at(const core::Catalog& catalog, int distance) -> int {
 auto bestDistance(const core::Catalog& catalog,
                   std::span<const std::string> names) -> int {
   const auto targets = findAll(catalog, names);
+
   if (!targets) {
     spdlog::error("{}", targets.error());
     return kFailure;

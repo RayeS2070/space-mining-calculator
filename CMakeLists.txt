@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.30 FATAL_ERROR)
 project(space-mining-calculator LANGUAGES C CXX)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
+# No C++ modules: clangd crashes on them. Without scanning, no dependency
+# scanner runs (emscan-deps for the browser).
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 # Checks below go before the dependencies, so they get them too.
 

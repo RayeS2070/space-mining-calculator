@@ -1,4 +1,4 @@
-module;
+#include "core/distance.hpp"
 
 #include <algorithm>
 #include <cstddef>
@@ -7,8 +7,6 @@ module;
 #include <limits>
 #include <span>
 #include <vector>
-
-module core;
 
 namespace core {
 

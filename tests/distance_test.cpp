@@ -1,3 +1,5 @@
+#include "core/distance.hpp"
+
 #include <gtest/gtest.h>
 
 #include <cstddef>
@@ -7,7 +9,8 @@
 #include <string_view>
 #include <vector>
 
-import reader;
+#include "core/model.hpp"
+#include "reader/reader.hpp"
 
 namespace core {
 

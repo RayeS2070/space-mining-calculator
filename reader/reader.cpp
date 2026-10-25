@@ -1,4 +1,4 @@
-module;
+#include "reader/reader.hpp"
 
 #include <algorithm>
 #include <boost/json/parse.hpp>
@@ -17,7 +17,7 @@ module;
 #include <utility>
 #include <vector>
 
-module reader;
+#include "reader/embedded_json.hpp"
 
 namespace json = boost::json;
 

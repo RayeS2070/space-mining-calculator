@@ -1,4 +1,5 @@
-module;
+#ifndef SMC_CORE_MODEL_HPP
+#define SMC_CORE_MODEL_HPP
 
 #include <array>
 #include <bitset>
@@ -10,27 +11,25 @@ module;
 #include <string_view>
 #include <vector>
 
-export module core:model;
-
 // What the asteroids are, what the player has built and what they set. The
 // mechanics that work on these are in :mechanics.
 
-export namespace core {
+namespace core {
 
-constexpr std::string_view kName = "space-mining-calc";
+inline constexpr std::string_view kName = "space-mining-calc";
 
 // Drone tiers, in the order of the droneTiers list of data/asteroids.json.
-constexpr std::array<std::string_view, 14> kDroneTierNames = {
+inline constexpr std::array<std::string_view, 14> kDroneTierNames = {
     "LV", "MV",  "HV",  "EV",  "IV",  "LuV", "ZPM",
     "UV", "UHV", "UEV", "UIV", "UMV", "UXV", "MAX"};
-constexpr int kDroneTierCount = static_cast<int>(kDroneTierNames.size());
+inline constexpr int kDroneTierCount = static_cast<int>(kDroneTierNames.size());
 using DroneSet = std::bitset<kDroneTierNames.size()>;
 
 // Plasma tiers 1..5: helium, bismuth, radon, technetium, plutonium-241.
-constexpr int kPlasmaTierCount = 5;
+inline constexpr int kPlasmaTierCount = 5;
 // Plasma per parallel, mB, indexed by plasma tier - 1.
-constexpr std::array<int, kPlasmaTierCount> kPlasmaPerParallel = {825, 550, 375,
-                                                                  250, 150};
+inline constexpr std::array<int, kPlasmaTierCount> kPlasmaPerParallel = {
+    825, 550, 375, 250, 150};
 
 // One possible result of a draw.
 struct Output {
@@ -68,12 +67,7 @@ struct Catalog {
 
 // Index of the asteroid with the name. Names are unique in the data.
 auto findAsteroid(std::span<const Asteroid> asteroids, std::string_view name)
-    -> std::optional<std::size_t> {
-  for (std::size_t i = 0; i < asteroids.size(); ++i) {
-    if (asteroids[i].name == name) return i;
-  }
-  return std::nullopt;
-}
+    -> std::optional<std::size_t>;
 
 // One recipe: an asteroid with one drone tier. The fields that do not depend
 // on the drone tier are copied from the asteroid, so a recipe is checked
@@ -93,11 +87,11 @@ struct Recipe {
 };
 
 // Mining module tiers 1..3.
-constexpr int kModuleTierCount = 3;
+inline constexpr int kModuleTierCount = 3;
 // Voltage of each module tier, EU/t, indexed by tier - 1. The module has no
 // energy hatch of its own: getMaxInputVoltage() is V[tTier] with tTier fixed
 // per module, UV / UHV / UEV.
-constexpr std::array<std::int64_t, kModuleTierCount> kModuleVoltage = {
+inline constexpr std::array<std::int64_t, kModuleTierCount> kModuleVoltage = {
     524'288, 2'097'152, 8'388'608};
 
 // What the player has built: fixed while the settings are searched.
@@ -114,3 +108,5 @@ struct Settings {
 };
 
 }  // namespace core
+
+#endif  // SMC_CORE_MODEL_HPP

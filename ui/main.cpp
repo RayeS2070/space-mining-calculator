@@ -15,7 +15,8 @@
 #include <emscripten.h>
 #endif
 
-import reader;
+#include "core/model.hpp"
+#include "reader/reader.hpp"
 
 namespace {
 

@@ -1,13 +1,12 @@
-module;
+#ifndef SMC_CORE_DISTANCE_HPP
+#define SMC_CORE_DISTANCE_HPP
 
 #include <cstddef>
 #include <expected>
 #include <span>
 #include <vector>
 
-export module core:distance;
-
-import :model;
+#include "core/model.hpp"
 
 // Choice of the mining distance for chosen target asteroids.
 //
@@ -19,16 +18,15 @@ import :model;
 // Simplified so far: each asteroid counts once with its base duration, as if
 // one drone tier reached it; module tier, voltage and mods do not filter.
 
-export namespace core {
+namespace core {
 
 // Distances from min to max, both included.
 struct DistanceRange {
   int min = 0;
   int max = 0;
 
-  // A member, not a hidden friend: gcc 16.2 crashes (ICE in
-  // module_state::mangle) on a defaulted friend operator== in an importer.
-  auto operator==(const DistanceRange&) const -> bool = default;
+  friend auto operator==(const DistanceRange&, const DistanceRange&)
+      -> bool = default;
 };
 
 enum class DistanceError {
@@ -52,3 +50,5 @@ auto bestDistances(std::span<const Asteroid> asteroids,
     -> std::expected<std::vector<DistanceRange>, DistanceError>;
 
 }  // namespace core
+
+#endif  // SMC_CORE_DISTANCE_HPP
