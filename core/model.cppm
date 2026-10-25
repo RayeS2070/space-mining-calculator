@@ -5,6 +5,7 @@ module;
 #include <cstddef>
 #include <cstdint>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -64,6 +65,15 @@ struct Catalog {
   std::string gt5uVersion;  // GT5U version the data comes from
   std::vector<Asteroid> asteroids;
 };
+
+// Index of the asteroid with the name. Names are unique in the data.
+auto findAsteroid(std::span<const Asteroid> asteroids, std::string_view name)
+    -> std::optional<std::size_t> {
+  for (std::size_t i = 0; i < asteroids.size(); ++i) {
+    if (asteroids[i].name == name) return i;
+  }
+  return std::nullopt;
+}
 
 // One recipe: an asteroid with one drone tier. The fields that do not depend
 // on the drone tier are copied from the asteroid, so a recipe is checked

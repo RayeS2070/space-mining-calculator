@@ -1,16 +1,19 @@
 #include <spdlog/spdlog.h>
 
 #include <algorithm>
+#include <array>
 #include <boost/program_options.hpp>
 #include <cstddef>
+#include <cstdlib>
 #include <expected>
 #include <format>
-#include <limits>
 #include <print>
 #include <ranges>
-#include <set>
+#include <span>
 #include <sstream>
 #include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 import reader;
@@ -19,12 +22,24 @@ namespace po = boost::program_options;
 
 namespace {
 
-constexpr std::size_t kLineWidth = 100;
+// Exit codes besides EXIT_SUCCESS.
+constexpr int kFailure = 1;     // the command could not be done
+constexpr int kBadOptions = 2;  // the command line is wrong
 
-// "Coal ore ×64 70.0%": the share is the game's exact one, see
+// Commands: at most one per run.
+constexpr std::array<const char*, 4> kCommands = {"list", "show", "at",
+                                                  "best-distance"};
+
+constexpr std::size_t kLineWidth = 100;
+constexpr std::string_view kIndent = "   ";
+
+// One table row; the name width comes first.
+constexpr std::string_view kRowFormat =
+    "{:<{}}  {:>8}  {:>7}  {:>6}  {:>6}  {:>7}  {:>5}  {:>8}  {}";
+
+// "Coal ore x64 70.0%": the share is the game's exact one, see
 // core::outputHits.
-auto describeOutputs(const core::Asteroid& asteroid)
-    -> std::vector<std::string> {
+auto formatOutputs(const core::Asteroid& asteroid) -> std::vector<std::string> {
   const std::vector<int> hits = core::outputHits(asteroid.outputs);
   int total = 0;
   for (int h : hits) total += h;
@@ -40,178 +55,213 @@ auto describeOutputs(const core::Asteroid& asteroid)
   return out;
 }
 
-auto printAsteroidInfo(const core::Asteroid& a, std::size_t maxNameWidth)
-    -> void {
-  std::println(
-      "{:<{}}  {:>7}  {:>7}  {:>2}  {:>6}  {:>7}  {:>5}  {:>8}  {}", a.name,
-      maxNameWidth, std::format("{}-{}", a.minDistance, a.maxDistance),
-      std::format("{}-{}", core::kDroneTierNames[a.firstDroneTier],
-                  core::kDroneTierNames[a.lastDroneTier]),
-      a.minModuleTier, a.weight, std::format("{}-{}", a.minSize, a.maxSize),
-      a.duration, a.eut, a.requiresMod.value_or(""));
-  std::string line = "   ";
-  for (const std::string& output : describeOutputs(a)) {
-    if (line.size() > 3 && line.size() + 2 + output.size() > kLineWidth) {
+// "a, b, c".
+auto join(std::ranges::input_range auto&& parts) -> std::string {
+  return parts | std::views::join_with(std::string_view(", ")) |
+         std::ranges::to<std::string>();
+}
+
+auto formatRange(const core::DistanceRange& range) -> std::string {
+  return range.min == range.max ? std::format("{}", range.min)
+                                : std::format("{}-{}", range.min, range.max);
+}
+
+auto printRow(const core::Asteroid& a, std::size_t nameWidth) -> void {
+  std::println(kRowFormat, a.name, nameWidth,
+               formatRange({.min = a.minDistance, .max = a.maxDistance}),
+               std::format("{}-{}", core::kDroneTierNames[a.firstDroneTier],
+                           core::kDroneTierNames[a.lastDroneTier]),
+               std::format("T{}", a.minModuleTier), a.weight,
+               std::format("{}-{}", a.minSize, a.maxSize), a.duration, a.eut,
+               a.requiresMod.value_or(""));
+
+  // The outputs below the row, wrapped at kLineWidth.
+  std::string line(kIndent);
+  for (const std::string& output : formatOutputs(a)) {
+    if (line.size() > kIndent.size() &&
+        line.size() + 2 + output.size() > kLineWidth) {
       std::println("{}", line);
-      line = "   ";
+      line = kIndent;
     }
-    line += line.size() > 3 ? ", " + output : " " + output;
+    line += line.size() > kIndent.size() ? ", " + output : " " + output;
   }
   std::println("{}", line);
 }
 
-auto getMaxNameWidth(std::span<const core::Asteroid> asteroids) -> std::size_t {
-  return std::ranges::max(asteroids, {},
-                          [](const core::Asteroid& a) { return a.name.size(); })
-      .name.size();
-}
-
-auto printHeader(const std::size_t nameWidth) -> void {
-  std::println("{:<{}}  {:>7}  {:>7}  {:>2}  {:>6}  {:>7}  {:>5}  {:>8}  {}",
-               "asteroid", nameWidth, "dist", "drones", "T", "weight", "size",
-               "ticks", "EU/t", "needs");
-}
-
-// One row per asteroid, its outputs wrapped below it.
-auto printAsteroids(std::span<const core::Asteroid> asteroids) -> void {
-  const auto nameWidth = getMaxNameWidth(asteroids);
-  printHeader(nameWidth);
-
-  for (const core::Asteroid& a : asteroids) {
-    printAsteroidInfo(a, nameWidth);
+// The asteroids at the indices, one row each with its outputs below.
+auto printTable(const core::Catalog& catalog, std::span<const std::size_t> rows)
+    -> void {
+  constexpr std::string_view kNameHeader = "asteroid";
+  std::size_t nameWidth = kNameHeader.size();
+  for (const std::size_t i : rows) {
+    nameWidth = std::max(nameWidth, catalog.asteroids[i].name.size());
   }
+
+  std::println(kRowFormat, kNameHeader, nameWidth, "distance", "drones",
+               "module", "weight", "size", "ticks", "EU/t", "requires");
+  for (const std::size_t i : rows) printRow(catalog.asteroids[i], nameWidth);
 }
 
-auto findCommonRange(std::span<const core::Asteroid> asteroids)
-    -> std::expected<std::pair<std::int32_t, std::int32_t>, std::string> {
-  if (asteroids.empty()) return std::unexpected("empty range received");
-
-  std::int32_t min = 0, max = std::numeric_limits<std::int32_t>::max();
-
-  for (const auto& a : asteroids) {
-    min = std::max(a.minDistance, min);
-    max = std::min(a.maxDistance, max);
-    if (max <= min) {
-      return std::unexpected("no common range");
+// Indices of the named asteroids. The error names every unknown one.
+auto findAll(const core::Catalog& catalog, std::span<const std::string> names)
+    -> std::expected<std::vector<std::size_t>, std::string> {
+  std::vector<std::size_t> found;
+  std::vector<std::string_view> unknown;
+  for (const std::string& name : names) {
+    if (const auto i = core::findAsteroid(catalog.asteroids, name)) {
+      found.push_back(*i);
+    } else {
+      unknown.push_back(name);
     }
   }
+  if (!unknown.empty()) {
+    return std::unexpected(std::format("unknown asteroid{} {:n}; see --list",
+                                       unknown.size() > 1 ? "s" : "", unknown));
+  }
+  return found;
+}
 
-  return std::make_pair(min, max);
+auto describe(core::DistanceError error, const core::Catalog& catalog,
+              std::span<const std::size_t> targets) -> std::string {
+  switch (error) {
+    case core::DistanceError::noTargets:
+      return "no target asteroid given";
+    case core::DistanceError::noCommonRange:
+      return std::format(
+          "no distance reaches all the targets: {}",
+          join(targets | std::views::transform([&](std::size_t i) {
+                 const core::Asteroid& a = catalog.asteroids[i];
+                 return std::format(
+                     "{} {}", a.name,
+                     formatRange({.min = a.minDistance, .max = a.maxDistance}));
+               })));
+  }
+  std::unreachable();
+}
+
+auto list(const core::Catalog& catalog) -> int {
+  const auto rows = std::views::iota(std::size_t{0}, catalog.asteroids.size()) |
+                    std::ranges::to<std::vector>();
+  printTable(catalog, rows);
+  return EXIT_SUCCESS;
+}
+
+auto show(const core::Catalog& catalog, std::span<const std::string> names)
+    -> int {
+  const auto rows = findAll(catalog, names);
+  if (!rows) {
+    spdlog::error("{}", rows.error());
+    return kFailure;
+  }
+  printTable(catalog, *rows);
+  return EXIT_SUCCESS;
+}
+
+auto at(const core::Catalog& catalog, int distance) -> int {
+  const auto rows = std::views::iota(std::size_t{0}, catalog.asteroids.size()) |
+                    std::views::filter([&](std::size_t i) {
+                      return core::isReachable(catalog.asteroids[i], distance);
+                    }) |
+                    std::ranges::to<std::vector>();
+  if (rows.empty()) {
+    std::println("No asteroid at distance {}.", distance);
+  } else {
+    printTable(catalog, rows);
+  }
+  return EXIT_SUCCESS;
+}
+
+auto bestDistance(const core::Catalog& catalog,
+                  std::span<const std::string> names) -> int {
+  const auto targets = findAll(catalog, names);
+  if (!targets) {
+    spdlog::error("{}", targets.error());
+    return kFailure;
+  }
+  const auto best = core::bestDistances(catalog.asteroids, *targets);
+  if (!best) {
+    spdlog::error("{}", describe(best.error(), catalog, *targets));
+    return kFailure;
+  }
+  std::println("{}", join(*best | std::views::transform(formatRange)));
+  return EXIT_SUCCESS;
 }
 
 }  // namespace
 
 auto main(int argc, char** argv) -> int {
-  std::string dataPath;
-  std::string infoTarget;
-  std::int32_t distance;
-  std::string asteroidsToDistanceFind;
-
+  po::options_description commands(
+      "Commands (one at a time; with none, a summary of the data)");
+  // clang-format off
+  commands.add_options()
+    ("list,l", "list all asteroids")
+    ("show,s", po::value<std::vector<std::string>>()->multitoken()->value_name("NAME..."),
+        "show the named asteroids, e.g. coalAsteroid")
+    ("at", po::value<int>()->value_name("DISTANCE"),
+        "list the asteroids reachable at the distance")
+    ("best-distance", po::value<std::vector<std::string>>()->multitoken()->value_name("NAME..."),
+        "the distances where the named asteroids come up most often per tick");
+  // clang-format on
   po::options_description options("Options");
   // clang-format off
   options.add_options()
     ("help,h", "show this help")
-    ("data", po::value(&dataPath), "asteroid data instead of the built-in one, e.g. data/asteroids.json")
-    ("list,l", "print list of asteroids")
-    ("info,i", po::value(&infoTarget), "print info about target asteroid")
-    ("distance,d", po::value(&distance), "print all asteroids on distance")
-    ("find-distance-for", po::value(&asteroidsToDistanceFind), "");
+    ("data", po::value<std::string>()->value_name("FILE"),
+        "read the asteroids from the file instead of the built-in data");
   // clang-format on
+  po::options_description all;
+  all.add(commands).add(options);
 
   po::variables_map args;
-  // program_options reports bad arguments by throwing: stopped here.
+  // program_options reports a bad command line by throwing: stopped here.
   try {
-    po::store(po::parse_command_line(argc, argv, options), args);
+    // No positional arguments: an empty description makes a stray word an
+    // error, parse_command_line would drop it silently.
+    po::store(po::command_line_parser(argc, argv)
+                  .options(all)
+                  .positional(po::positional_options_description{})
+                  .run(),
+              args);
     po::notify(args);
   } catch (const po::error& e) {
-    spdlog::error("{}", e.what());
-    return 1;
+    spdlog::error("{}; see --help", e.what());
+    return kBadOptions;
   }
   if (args.contains("help")) {
     std::ostringstream help;
-    help << options;
-    std::print("{}", help.str());
-    return 0;
+    help << all;
+    std::print("Usage: smc [--data FILE] [COMMAND]\n{}", help.str());
+    return EXIT_SUCCESS;
+  }
+  if (std::ranges::count_if(
+          kCommands, [&](const char* c) { return args.contains(c); }) > 1) {
+    spdlog::error("give one command at a time: {}",
+                  join(kCommands | std::views::transform([](const char* c) {
+                         return std::format("--{}", c);
+                       })));
+    return kBadOptions;
   }
 
-  const auto catalog = args.contains("data") ? reader::readCatalog(dataPath)
-                                             : reader::embeddedCatalog();
-
+  const auto catalog = args.contains("data")
+                           ? reader::readCatalog(args["data"].as<std::string>())
+                           : reader::embeddedCatalog();
   if (!catalog) {
-    spdlog::error("{}", catalog.error());
-    return 1;
-  }
-  if (args.contains("list")) {
-    printAsteroids(catalog->asteroids);
-    return 0;
+    spdlog::error("cannot load the asteroids: {}", catalog.error());
+    return kFailure;
   }
 
-  if (args.contains("info")) {
-    const auto it = std::ranges::find(catalog->asteroids, infoTarget,
-                                      &core::Asteroid::name);
-
-    printHeader(it->name.size());
-    printAsteroidInfo(*it, it->name.size());
-    return 0;
+  if (args.contains("list")) return list(*catalog);
+  if (args.contains("show")) {
+    return show(*catalog, args["show"].as<std::vector<std::string>>());
+  }
+  if (args.contains("at")) return at(*catalog, args["at"].as<int>());
+  if (args.contains("best-distance")) {
+    return bestDistance(*catalog,
+                        args["best-distance"].as<std::vector<std::string>>());
   }
 
-  if (args.contains("distance")) {
-    auto asteroidsInDistance =
-        catalog->asteroids |
-        std::views::filter([distance](const core::Asteroid& a) {
-          return distance >= a.minDistance && distance <= a.maxDistance;
-        }) |
-        std::ranges::to<std::vector<core::Asteroid>>();
-
-    std::size_t nameWidth = getMaxNameWidth(asteroidsInDistance);
-    printHeader(nameWidth);
-    printAsteroids(asteroidsInDistance);
-  }
-
-  if (args.contains("find-distance-for")) {
-    const auto values = asteroidsToDistanceFind | std::views::lazy_split(',') |
-                        std::ranges::to<std::set<std::string>>();
-
-    const auto targets = catalog->asteroids |
-                         std::views::filter([&](const core::Asteroid& a) {
-                           return values.contains(a.name);
-                         }) |
-                         std::ranges::to<std::vector<core::Asteroid>>();
-
-    const auto rn = findCommonRange(targets);
-    if (!rn) {
-      spdlog::error("common range: {}", rn.error());
-      return 1;
-    }
-
-    const auto [min, max] = *rn;
-    std::int32_t solution = min;
-    double maxFrac = 0.;
-    const auto targetsWeight = std::ranges::fold_left(
-        targets | std::views::transform(&core::Asteroid::weight), 0,
-        std::plus<std::int32_t>{});
-
-    for (const auto i : std::views::iota(min, max)) {
-      auto range = catalog->asteroids | std::views::filter([i](const auto& a) {
-                     return i >= a.minDistance && i <= a.maxDistance;
-                   }) |
-                   std::views::transform(&core::Asteroid::weight);
-
-      const auto totalWeight =
-          std::ranges::fold_left(range, 0, std::plus<std::int32_t>{});
-
-      if (auto frac = static_cast<double>(targetsWeight) / totalWeight;
-          frac >= maxFrac) {
-        solution = i;
-        maxFrac = frac;
-      }
-    }
-
-    std::println("{}", solution);
-    return 0;
-  }
-
-  std::println("{} asteroids, {} recipes (GT5U {})", catalog->asteroids.size(),
+  std::println("{} asteroids, {} recipes, GT5U {}. See --help for commands.",
+               catalog->asteroids.size(),
                core::expand(catalog->asteroids).size(), catalog->gt5uVersion);
-  return 0;
+  return EXIT_SUCCESS;
 }

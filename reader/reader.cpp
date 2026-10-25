@@ -267,6 +267,13 @@ auto toCatalog(const json::value& root)
   if (!std::ranges::equal(droneTiers, core::kDroneTierNames)) {
     return std::unexpected("$.droneTiers: not the tiers the model knows");
   }
+  // Asteroids are looked up by name: core::findAsteroid.
+  for (std::size_t i = 0; i < catalog.asteroids.size(); ++i) {
+    if (core::findAsteroid(catalog.asteroids, catalog.asteroids[i].name) != i) {
+      return std::unexpected(std::format("$.asteroids[{}]: name {} repeated", i,
+                                         catalog.asteroids[i].name));
+    }
+  }
   catalog.gt5uVersion = std::move(source.gt5u);
   return catalog;
 }

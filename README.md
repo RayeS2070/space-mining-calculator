@@ -4,7 +4,8 @@ A calculator for the **Space Elevator mining module** in GregTech: New Horizons.
 module settings that mine a chosen resource best. The module picks a random asteroid on every
 operation, so choosing distance, drones, plasma and overdrive is an optimization problem.
 
-> **Status:** asteroid data is extracted from the mod sources. The math is not written yet.
+> **Status:** asteroid data is extracted from the mod sources. The first piece of math picks the
+> distance for chosen asteroids, in a simplified model (see [Command line](#command-line)).
 
 ## Plan
 
@@ -62,6 +63,25 @@ R_j = Σ_r w_r · E_j(r) / Σ_r w_r · t_r
 
 `E_j(r)` is the expected amount of j per operation with recipe r, and `t_r` its time.
 
+## Command line
+
+```sh
+smc                                  # summary of the data
+smc --list                           # every asteroid with its outputs
+smc --show coalAsteroid tinAsteroid  # the named asteroids
+smc --at 50                          # the asteroids reachable at distance 50
+smc --best-distance saltAsteroid     # the best distances for the asteroid
+```
+
+`--best-distance` prints every distance in the targets' common range where they come up most
+often per tick, as ranges: `241-250`, or `1-3, 7-10`. While all targets are reachable, that is
+where Σ weight · duration of everything reachable is least (see the long-run rate above). For
+now each asteroid counts once with its base duration, as if one drone tier reached it, and the
+module tier, voltage and mods filter nothing.
+
+Exit codes: 0 done, 1 the command failed (unknown asteroid, unreadable data), 2 a bad command
+line.
+
 ## Data
 
 [data/asteroids.json](data/asteroids.json) holds every asteroid as `addAsteroids()` passes it to
@@ -77,7 +97,7 @@ new one, the script stops and names it.
 
 The build embeds the file into the programs, so the desktop and the browser read the same data
 the same way; editing it rebuilds one generated source. The command line tool can read another
-file instead: `space_mining_calc --data path/to/asteroids.json`.
+file instead: `smc --data path/to/asteroids.json`.
 
 | Field | Meaning |
 | --- | --- |
@@ -110,9 +130,21 @@ Native presets are named after their platform (`linux_*`) and show up only on th
 cmake --list-presets             # the presets for this host
 cmake --preset linux_clang_debug
 cmake --build --preset linux_clang_debug
-./build/linux/linux_clang_debug/space_mining_calc         # command line tool
+./build/linux/linux_clang_debug/smc                       # command line tool
 ./build/linux/linux_clang_debug/ui/space_mining_calc_ui   # desktop UI
 ```
+
+### Tests
+
+Unit tests use [GoogleTest](https://github.com/google/googletest) and build natively, on by
+default (`-DSMC_BUILD_TESTS=OFF` turns them off). Every native preset has a test preset:
+
+```sh
+ctest --preset linux_clang_debug
+./build/linux/linux_clang_debug/tests/smc_tests --gtest_also_run_disabled_tests
+```
+
+Tests named `DISABLED_` describe behaviour that is wanted but not written yet.
 
 ### Browser (WebAssembly)
 

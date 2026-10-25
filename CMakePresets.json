@@ -209,5 +209,54 @@
       "name": "wasm_release",
       "configurePreset": "wasm_release"
     }
+  ],
+  "testPresets": [
+    {
+      "name": "linux",
+      "hidden": true,
+      "output": {
+        "outputOnFailure": true
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "linux_gcc_debug",
+      "configurePreset": "linux_gcc_debug",
+      "inherits": [
+        "linux"
+      ]
+    },
+    {
+      "name": "linux_gcc_release",
+      "configurePreset": "linux_gcc_release",
+      "inherits": [
+        "linux"
+      ]
+    },
+    {
+      "name": "linux_clang_debug",
+      "configurePreset": "linux_clang_debug",
+      "inherits": [
+        "linux"
+      ]
+    },
+    {
+      "name": "linux_clang_release",
+      "configurePreset": "linux_clang_release",
+      "inherits": [
+        "linux"
+      ]
+    },
+    {
+      "name": "linux_clang_asan",
+      "configurePreset": "linux_clang_asan",
+      "inherits": [
+        "linux"
+      ]
+    }
   ]
 }

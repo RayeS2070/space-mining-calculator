@@ -7,8 +7,10 @@ target_sources(smc_core
         core.cppm
         model.cppm
         mechanics.cppm
+        distance.cppm
         PRIVATE
         mechanics.cpp
+        distance.cpp
 )
 target_compile_features(smc_core PUBLIC cxx_std_26)
 target_link_libraries(smc_core PRIVATE smc_warnings)

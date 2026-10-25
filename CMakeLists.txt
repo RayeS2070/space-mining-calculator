@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.30 FATAL_ERROR)
 
-project(space-mining-calc LANGUAGES C CXX)
+project(space-mining-calculator LANGUAGES C CXX)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -58,9 +58,9 @@ add_subdirectory(reader)
 
 # The command line tool needs a terminal: not for the browser.
 if(NOT EMSCRIPTEN)
-    add_executable(space_mining_calc src/main.cpp)
-    target_compile_features(space_mining_calc PRIVATE cxx_std_26)
-    target_link_libraries(space_mining_calc
+        add_executable(smc src/main.cpp)
+        target_compile_features(smc PRIVATE cxx_std_26)
+        target_link_libraries(smc
             PRIVATE
             smc_warnings
             smc_reader
@@ -70,3 +70,10 @@ if(NOT EMSCRIPTEN)
 endif()
 
 add_subdirectory(ui)
+
+# The tests run natively: the browser build has no test runner yet.
+option(SMC_BUILD_TESTS "Build the unit tests" ${PROJECT_IS_TOP_LEVEL})
+if(SMC_BUILD_TESTS AND NOT EMSCRIPTEN)
+        enable_testing()
+        add_subdirectory(tests)
+endif()
