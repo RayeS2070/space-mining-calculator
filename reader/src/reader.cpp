@@ -17,7 +17,7 @@
 #include <utility>
 #include <vector>
 
-#include "reader/embedded_json.hpp"
+#include "embedded_json.hpp"
 
 namespace json = boost::json;
 

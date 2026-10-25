@@ -4,15 +4,16 @@ add_library(smc_core)
 target_sources(smc_core
         PUBLIC
         FILE_SET HEADERS
-        BASE_DIRS ${PROJECT_SOURCE_DIR}
+        BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
         FILES
-        model.hpp
-        mechanics.hpp
-        distance.hpp
+        include/core/model.hpp
+        include/core/mechanics.hpp
+        include/core/distance.hpp
         PRIVATE
-        model.cpp
-        mechanics.cpp
-        distance.cpp
+        src/model.cpp
+        src/mechanics.cpp
+        src/distance.cpp
 )
 target_compile_features(smc_core PUBLIC cxx_std_26)
 target_link_libraries(smc_core PRIVATE smc_warnings)
+

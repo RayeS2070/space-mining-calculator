@@ -12,7 +12,7 @@ add_custom_command(
         COMMAND ${CMAKE_COMMAND}
         -DINPUT=${SMC_ASTEROIDS_JSON}
         -DOUTPUT=${SMC_ASTEROIDS_CPP}
-        -DHEADER=reader/embedded_json.hpp
+        -DHEADER=embedded_json.hpp
         -DNAMESPACE=reader
         -DFUNCTION=embeddedJson
         -P ${PROJECT_SOURCE_DIR}/cmake/embed.cmake
@@ -24,14 +24,17 @@ add_custom_command(
 target_sources(smc_reader
         PUBLIC
         FILE_SET HEADERS
-        BASE_DIRS ${PROJECT_SOURCE_DIR}
+        BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
         FILES
-        reader.hpp
+        include/reader/reader.hpp
         PRIVATE
-        embedded_json.hpp
-        reader.cpp
+        src/embedded_json.hpp
+        src/reader.cpp
         ${SMC_ASTEROIDS_CPP}
 )
+# The generated TU lives in the build tree, away from src/: it finds
+# embedded_json.hpp through this path.
+target_include_directories(smc_reader PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_compile_features(smc_reader PUBLIC cxx_std_26)
 target_link_libraries(smc_reader
         PUBLIC
