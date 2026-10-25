@@ -1,0 +1,17 @@
+# IDE
+.vscode
+.idea
+
+# Build trees and installs made by CMakePresets.json
+build/
+install/
+
+# Personal presets (local compilers), by CMake convention not shared
+CMakeUserPresets.json
+
+# ImGui window layout, saved next to wherever the UI was started
+imgui.ini
+
+# AI
+AGENTS.md
+CLAUDE.md

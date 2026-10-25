@@ -1,0 +1,1821 @@
+{
+  "source": {
+    "file": "src/main/java/gtnhintergalactic/recipe/SpaceMiningRecipes.java",
+    "gt5u": "5.09.51.482"
+  },
+  "droneTiers": [
+    "LV",
+    "MV",
+    "HV",
+    "EV",
+    "IV",
+    "LuV",
+    "ZPM",
+    "UV",
+    "UHV",
+    "UEV",
+    "UIV",
+    "UMV",
+    "UXV",
+    "MAX"
+  ],
+  "asteroids": [
+    {
+      "name": "coalAsteroid",
+      "outputs": [
+        {
+          "name": "Coal",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 7000
+        },
+        {
+          "name": "Lignite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1000
+        },
+        {
+          "name": "Graphite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 120,
+      "minDistance": 1,
+      "maxDistance": 40,
+      "computation": 20,
+      "minModuleTier": 1,
+      "duration": 200,
+      "eut": 1920,
+      "scaleEUt": true,
+      "droneTiers": [
+        "LV",
+        "ZPM"
+      ],
+      "weight": 200
+    },
+    {
+      "name": "saltAsteroid",
+      "outputs": [
+        {
+          "name": "Salt",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 4000
+        },
+        {
+          "name": "RockSalt",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Saltpeter",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 4000
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 120,
+      "minDistance": 1,
+      "maxDistance": 250,
+      "computation": 20,
+      "minModuleTier": 1,
+      "duration": 200,
+      "eut": 1920,
+      "scaleEUt": true,
+      "droneTiers": [
+        "LV",
+        "IV"
+      ],
+      "weight": 300
+    },
+    {
+      "name": "ironAsteroid",
+      "outputs": [
+        {
+          "name": "Iron",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 4000
+        },
+        {
+          "name": "Gold",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Magnetite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1000
+        },
+        {
+          "name": "Pyrite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1000
+        },
+        {
+          "name": "BasalticMineralSand",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        },
+        {
+          "name": "GraniticMineralSand",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 150,
+      "minDistance": 1,
+      "maxDistance": 180,
+      "computation": 10,
+      "minModuleTier": 1,
+      "duration": 200,
+      "eut": 1920,
+      "scaleEUt": true,
+      "droneTiers": [
+        "LV",
+        "ZPM"
+      ],
+      "weight": 600
+    },
+    {
+      "name": "copperAsteroid",
+      "outputs": [
+        {
+          "name": "Copper",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 5000
+        },
+        {
+          "name": "Chalcopyrite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Malachite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 150,
+      "minDistance": 3,
+      "maxDistance": 12,
+      "computation": 10,
+      "minModuleTier": 1,
+      "duration": 200,
+      "eut": 1920,
+      "scaleEUt": true,
+      "droneTiers": [
+        "LV",
+        "LuV"
+      ],
+      "weight": 500
+    },
+    {
+      "name": "tinAsteroid",
+      "outputs": [
+        {
+          "name": "Cassiterite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "CassiteriteSand",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "Tin",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 6000
+        },
+        {
+          "name": "Asbestos",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        }
+      ],
+      "minSize": 50,
+      "maxSize": 200,
+      "minDistance": 2,
+      "maxDistance": 100,
+      "computation": 10,
+      "minModuleTier": 1,
+      "duration": 50,
+      "eut": 7680,
+      "scaleEUt": true,
+      "droneTiers": [
+        "LV",
+        "IV"
+      ],
+      "weight": 400
+    },
+    {
+      "name": "aluminiumAsteroid",
+      "outputs": [
+        {
+          "name": "Aluminium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 5000
+        },
+        {
+          "name": "Bauxite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3500
+        },
+        {
+          "name": "Rutile",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1500
+        }
+      ],
+      "minSize": 10,
+      "maxSize": 20,
+      "minDistance": 5,
+      "maxDistance": 20,
+      "computation": 20,
+      "minModuleTier": 1,
+      "duration": 50,
+      "eut": 7680,
+      "scaleEUt": true,
+      "droneTiers": [
+        "MV",
+        "EV"
+      ],
+      "weight": 120
+    },
+    {
+      "name": "nickelAsteroid",
+      "outputs": [
+        {
+          "name": "Nickel",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 4000
+        },
+        {
+          "name": "Pentlandite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Garnierite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        }
+      ],
+      "minSize": 20,
+      "maxSize": 40,
+      "minDistance": 5,
+      "maxDistance": 20,
+      "computation": 20,
+      "minModuleTier": 1,
+      "duration": 50,
+      "eut": 7680,
+      "scaleEUt": true,
+      "droneTiers": [
+        "LV",
+        "IV"
+      ],
+      "weight": 170
+    },
+    {
+      "name": "chromeAsteroid",
+      "outputs": [
+        {
+          "name": "Chrome",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 5000
+        },
+        {
+          "name": "Ruby",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Chromite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        }
+      ],
+      "minSize": 16,
+      "maxSize": 32,
+      "minDistance": 10,
+      "maxDistance": 20,
+      "computation": 40,
+      "minModuleTier": 1,
+      "duration": 50,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "MV",
+        "LuV"
+      ],
+      "weight": 100
+    },
+    {
+      "name": "platlineOreAsteroid",
+      "outputs": [
+        {
+          "name": "Platinum",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 6000
+        },
+        {
+          "name": "Palladium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Iridium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "Osmium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        }
+      ],
+      "minSize": 20,
+      "maxSize": 40,
+      "minDistance": 10,
+      "maxDistance": 50,
+      "computation": 60,
+      "minModuleTier": 1,
+      "duration": 50,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "HV",
+        "ZPM"
+      ],
+      "weight": 130
+    },
+    {
+      "name": "gemAsteroid",
+      "outputs": [
+        {
+          "name": "Ruby",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "Emerald",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "Sapphire",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "GreenSapphire",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "Diamond",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 750
+        },
+        {
+          "name": "Opal",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 750
+        },
+        {
+          "name": "Amethyst",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 750
+        },
+        {
+          "name": "Topaz",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1000
+        },
+        {
+          "name": "BlueTopaz",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        },
+        {
+          "name": "Bauxite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        },
+        {
+          "name": "Vinteum",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 400
+        },
+        {
+          "name": "NetherStar",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 100
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 160,
+      "minDistance": 17,
+      "maxDistance": 40,
+      "computation": 60,
+      "minModuleTier": 1,
+      "duration": 100,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "LV",
+        "LuV"
+      ],
+      "weight": 180
+    },
+    {
+      "name": "indiumAsteroid",
+      "outputs": [
+        {
+          "name": "Indium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 6000
+        },
+        {
+          "name": "Sphalerite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Zinc",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1000
+        },
+        {
+          "name": "Cadmium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1000
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 120,
+      "minDistance": 50,
+      "maxDistance": 90,
+      "computation": 120,
+      "minModuleTier": 2,
+      "duration": 500,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "IV",
+        "UEV"
+      ],
+      "weight": 170
+    },
+    {
+      "name": "thaumiumAsteroid",
+      "outputs": [
+        {
+          "name": "Thaumium",
+          "prefix": "dust",
+          "amount": 64,
+          "chance": 6000
+        },
+        {
+          "name": "Void",
+          "prefix": "dust",
+          "amount": 64,
+          "chance": 4000
+        }
+      ],
+      "minSize": 20,
+      "maxSize": 50,
+      "minDistance": 10,
+      "maxDistance": 70,
+      "computation": 120,
+      "minModuleTier": 1,
+      "duration": 600,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "HV",
+        "LuV"
+      ],
+      "weight": 150
+    },
+    {
+      "name": "basicMagicAsteroid",
+      "outputs": [
+        {
+          "name": "InfusedGold",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3500
+        },
+        {
+          "name": "Shadow",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3500
+        },
+        {
+          "name": "InfusedAir",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        },
+        {
+          "name": "InfusedEarth",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        },
+        {
+          "name": "InfusedFire",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        },
+        {
+          "name": "InfusedWater",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        },
+        {
+          "name": "InfusedEntropy",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        },
+        {
+          "name": "InfusedOrder",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        }
+      ],
+      "minSize": 24,
+      "maxSize": 60,
+      "minDistance": 8,
+      "maxDistance": 24,
+      "computation": 120,
+      "minModuleTier": 1,
+      "duration": 100,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "HV",
+        "LuV"
+      ],
+      "weight": 200
+    },
+    {
+      "name": "niobiumAsteroid",
+      "outputs": [
+        {
+          "name": "Niobium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Quantium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Ytterbium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "Yttrium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3500
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 120,
+      "minDistance": 30,
+      "maxDistance": 160,
+      "computation": 120,
+      "minModuleTier": 1,
+      "duration": 500,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "IV",
+        "UHV"
+      ],
+      "weight": 160
+    },
+    {
+      "name": "quartzAsteroid",
+      "outputs": [
+        {
+          "name": "Quartzite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "CertusQuartz",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2250
+        },
+        {
+          "name": "NetherQuartz",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2250
+        },
+        {
+          "name": "Vanadium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2500
+        }
+      ],
+      "minSize": 20,
+      "maxSize": 80,
+      "minDistance": 20,
+      "maxDistance": 120,
+      "computation": 50,
+      "minModuleTier": 1,
+      "duration": 500,
+      "eut": 7680,
+      "scaleEUt": true,
+      "droneTiers": [
+        "MV",
+        "ZPM"
+      ],
+      "weight": 230
+    },
+    {
+      "name": "lutetiumAsteroid",
+      "outputs": [
+        {
+          "name": "Tellurium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "Thulium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1000
+        },
+        {
+          "name": "Tantalum",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "Lutetium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        },
+        {
+          "name": "Redstone",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 5500
+        }
+      ],
+      "minSize": 20,
+      "maxSize": 80,
+      "minDistance": 40,
+      "maxDistance": 240,
+      "computation": 90,
+      "minModuleTier": 1,
+      "duration": 500,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "IV",
+        "UHV"
+      ],
+      "weight": 100
+    },
+    {
+      "name": "siliconAsteroid",
+      "outputs": [
+        {
+          "name": "Mica",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Silicon",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 4500
+        },
+        {
+          "name": "SiliconSG",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2500
+        }
+      ],
+      "minSize": 20,
+      "maxSize": 80,
+      "minDistance": 50,
+      "maxDistance": 250,
+      "computation": 60,
+      "minModuleTier": 2,
+      "duration": 500,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "HV",
+        "LuV"
+      ],
+      "weight": 200
+    },
+    {
+      "name": "phosphateAsteroid",
+      "outputs": [
+        {
+          "name": "Phosphate",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 4500
+        },
+        {
+          "name": "TricalciumPhosphate",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2500
+        },
+        {
+          "name": "Sulfur",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        }
+      ],
+      "minSize": 20,
+      "maxSize": 150,
+      "minDistance": 60,
+      "maxDistance": 250,
+      "computation": 60,
+      "minModuleTier": 1,
+      "duration": 500,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "IV",
+        "UIV"
+      ],
+      "weight": 150
+    },
+    {
+      "name": "leadAsteroid",
+      "outputs": [
+        {
+          "name": "Lead",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Arsenic",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2500
+        },
+        {
+          "name": "Barium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2500
+        },
+        {
+          "name": "Lepidolite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 100,
+      "minDistance": 5,
+      "maxDistance": 150,
+      "computation": 20,
+      "minModuleTier": 1,
+      "duration": 500,
+      "eut": 1920,
+      "scaleEUt": true,
+      "droneTiers": [
+        "LV",
+        "UV"
+      ],
+      "weight": 220
+    },
+    {
+      "name": "adamantiumAsteroid",
+      "outputs": [
+        {
+          "name": "Adamantium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2500
+        },
+        {
+          "name": "Bismuth",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Antimony",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Gallium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Lithium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1500
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 120,
+      "minDistance": 5,
+      "maxDistance": 120,
+      "computation": 20,
+      "minModuleTier": 1,
+      "duration": 500,
+      "eut": 1920,
+      "scaleEUt": true,
+      "droneTiers": [
+        "EV",
+        "ZPM"
+      ],
+      "weight": 300
+    },
+    {
+      "name": "tungstenTitaniumAsteroid",
+      "outputs": [
+        {
+          "name": "Tungsten",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Titanium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Neodymium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Molybdenum",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "Tungstate",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 70,
+      "minDistance": 60,
+      "maxDistance": 200,
+      "computation": 120,
+      "minModuleTier": 1,
+      "duration": 500,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "LV",
+        "LuV"
+      ],
+      "weight": 100
+    },
+    {
+      "name": "blueAsteroid",
+      "outputs": [
+        {
+          "name": "Lapis",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 6000
+        },
+        {
+          "name": "Calcite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Lazurite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1000
+        },
+        {
+          "name": "Sodalite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1000
+        }
+      ],
+      "minSize": 10,
+      "maxSize": 50,
+      "minDistance": 20,
+      "maxDistance": 200,
+      "computation": 60,
+      "minModuleTier": 1,
+      "duration": 500,
+      "eut": 7680,
+      "scaleEUt": true,
+      "droneTiers": [
+        "HV",
+        "UV"
+      ],
+      "weight": 250
+    },
+    {
+      "name": "aluminiumLanthlineAsteroid",
+      "outputs": [
+        {
+          "name": "Aluminium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3500
+        },
+        {
+          "name": "Bauxite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "Monazite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2500
+        },
+        {
+          "name": "Bastnasite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2500
+        }
+      ],
+      "minSize": 10,
+      "maxSize": 80,
+      "minDistance": 40,
+      "maxDistance": 120,
+      "computation": 60,
+      "minModuleTier": 1,
+      "duration": 500,
+      "eut": 7680,
+      "scaleEUt": true,
+      "droneTiers": [
+        "MV",
+        "ZPM"
+      ],
+      "weight": 250
+    },
+    {
+      "name": "evergladesAsteroid",
+      "outputs": [
+        {
+          "name": "KOBOLDITE",
+          "amount": 64,
+          "chance": 600
+        },
+        {
+          "name": "CROCROITE",
+          "amount": 64,
+          "chance": 400
+        },
+        {
+          "name": "GADOLINITE_Y",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "LEPERSONNITE",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "ZIRCON",
+          "amount": 64,
+          "chance": 1000
+        },
+        {
+          "name": "LAUTARITE",
+          "amount": 64,
+          "chance": 400
+        },
+        {
+          "name": "HONEAITE",
+          "amount": 64,
+          "chance": 1000
+        },
+        {
+          "name": "ALBURNITE",
+          "amount": 64,
+          "chance": 600
+        },
+        {
+          "name": "RARE_EARTH_LOW",
+          "amount": 64,
+          "chance": 1000
+        },
+        {
+          "name": "RARE_EARTH_MID",
+          "amount": 64,
+          "chance": 1000
+        },
+        {
+          "name": "RARE_EARTH_HIGH",
+          "amount": 64,
+          "chance": 1000
+        }
+      ],
+      "minSize": 10,
+      "maxSize": 20,
+      "minDistance": 110,
+      "maxDistance": 230,
+      "computation": 200,
+      "minModuleTier": 1,
+      "duration": 500,
+      "eut": 7680,
+      "scaleEUt": false,
+      "droneTiers": [
+        "ZPM",
+        "UHV"
+      ],
+      "weight": 100
+    },
+    {
+      "name": "draconicAsteroid",
+      "outputs": [
+        {
+          "name": "Draconium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 6500
+        },
+        {
+          "name": "DraconiumAwakened",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2500
+        },
+        {
+          "name": "ElectrumFlux",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1000
+        }
+      ],
+      "minSize": 15,
+      "maxSize": 60,
+      "minDistance": 60,
+      "maxDistance": 200,
+      "computation": 360,
+      "minModuleTier": 2,
+      "duration": 600,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "LuV",
+        "UHV"
+      ],
+      "weight": 190
+    },
+    {
+      "name": "cheeseAsteroid",
+      "outputs": [
+        {
+          "name": "Cheese",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 10000
+        }
+      ],
+      "minSize": 1,
+      "maxSize": 30,
+      "minDistance": 90,
+      "maxDistance": 200,
+      "computation": 240,
+      "minModuleTier": 2,
+      "duration": 1000,
+      "eut": 122880,
+      "scaleEUt": true,
+      "droneTiers": [
+        "IV",
+        "UXV"
+      ],
+      "weight": 10
+    },
+    {
+      "name": "arditeCobaltAsteroid",
+      "outputs": [
+        {
+          "name": "Cobalt",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 3750
+        },
+        {
+          "name": "Ardite",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 3750
+        },
+        {
+          "name": "Manyullyn",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 2500
+        }
+      ],
+      "minSize": 20,
+      "maxSize": 90,
+      "minDistance": 30,
+      "maxDistance": 100,
+      "computation": 180,
+      "minModuleTier": 1,
+      "duration": 1000,
+      "eut": 7680,
+      "scaleEUt": true,
+      "droneTiers": [
+        "EV",
+        "UHV"
+      ],
+      "weight": 150
+    },
+    {
+      "name": "europiumAsteroid",
+      "outputs": [
+        {
+          "name": "Ledox",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 4000
+        },
+        {
+          "name": "CallistoIce",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 4000
+        },
+        {
+          "name": "Borax",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "Europium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        }
+      ],
+      "minSize": 40,
+      "maxSize": 120,
+      "minDistance": 40,
+      "maxDistance": 60,
+      "computation": 240,
+      "minModuleTier": 2,
+      "duration": 1000,
+      "eut": 122880,
+      "scaleEUt": true,
+      "droneTiers": [
+        "ZPM",
+        "UXV"
+      ],
+      "weight": 150
+    },
+    {
+      "name": "cosmicAsteroid",
+      "outputs": [
+        {
+          "name": "CosmicNeutronium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2500
+        },
+        {
+          "name": "Neutronium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2500
+        },
+        {
+          "name": "BlackPlutonium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2500
+        },
+        {
+          "name": "Bedrockium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2500
+        }
+      ],
+      "minSize": 10,
+      "maxSize": 70,
+      "minDistance": 60,
+      "maxDistance": 100,
+      "computation": 240,
+      "minModuleTier": 2,
+      "duration": 500,
+      "eut": 491520,
+      "scaleEUt": true,
+      "droneTiers": [
+        "ZPM",
+        "UXV"
+      ],
+      "weight": 170
+    },
+    {
+      "name": "infinityCatalystAsteroid",
+      "outputs": [
+        {
+          "name": "InfinityCatalyst",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 5000
+        },
+        {
+          "name": "CosmicNeutronium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Neutronium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 120,
+      "minDistance": 70,
+      "maxDistance": 100,
+      "computation": 320,
+      "minModuleTier": 2,
+      "duration": 1000,
+      "eut": 491520,
+      "scaleEUt": true,
+      "droneTiers": [
+        "UV",
+        "UXV"
+      ],
+      "weight": 150
+    },
+    {
+      "name": "ichoriumAsteroid",
+      "outputs": [
+        {
+          "name": "ShadowIron",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 4500
+        },
+        {
+          "name": "MeteoricIron",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Ichorium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "Desh",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        },
+        {
+          "name": "Americium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 120,
+      "minDistance": 70,
+      "maxDistance": 100,
+      "computation": 320,
+      "minModuleTier": 3,
+      "duration": 1000,
+      "eut": 491520,
+      "scaleEUt": true,
+      "droneTiers": [
+        "UEV",
+        "UXV"
+      ],
+      "weight": 150
+    },
+    {
+      "name": "clayAsteroid",
+      "outputs": [
+        {
+          "name": "clay",
+          "amount": 64,
+          "chance": 10000
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 60,
+      "minDistance": 20,
+      "maxDistance": 100,
+      "computation": 30,
+      "minModuleTier": 1,
+      "duration": 800,
+      "eut": 7680,
+      "scaleEUt": false,
+      "droneTiers": [
+        "LV",
+        "LuV"
+      ],
+      "weight": 200
+    },
+    {
+      "name": "mysteriousCrystalAsteroid",
+      "outputs": [
+        {
+          "name": "MysteriousCrystal",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 7400
+        },
+        {
+          "name": "Mytryl",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Oriharukon",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 500
+        },
+        {
+          "name": "HeeEndium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 98
+        },
+        {
+          "name": "end_powder_ore",
+          "amount": 64,
+          "chance": 2
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 60,
+      "minDistance": 65,
+      "maxDistance": 120,
+      "computation": 300,
+      "minModuleTier": 1,
+      "duration": 500,
+      "eut": 122880,
+      "scaleEUt": false,
+      "droneTiers": [
+        "IV",
+        "UXV"
+      ],
+      "weight": 220,
+      "requiresMod": "HardcoreEnderExpansion"
+    },
+    {
+      "name": "uraniumPlutoniumAsteroid",
+      "outputs": [
+        {
+          "name": "Uranium",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Uranium235",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 2450
+        },
+        {
+          "name": "Plutonium",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 2450
+        },
+        {
+          "name": "Plutonium241",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Thorianit",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 100
+        }
+      ],
+      "minSize": 40,
+      "maxSize": 180,
+      "minDistance": 30,
+      "maxDistance": 70,
+      "computation": 120,
+      "minModuleTier": 1,
+      "duration": 400,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "HV",
+        "ZPM"
+      ],
+      "weight": 150
+    },
+    {
+      "name": "holmiumSamariumAsteroid",
+      "outputs": [
+        {
+          "name": "Holmium",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Samarium",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Tiberium",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Strontium",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 2000
+        }
+      ],
+      "minSize": 15,
+      "maxSize": 50,
+      "minDistance": 40,
+      "maxDistance": 80,
+      "computation": 260,
+      "minModuleTier": 2,
+      "duration": 500,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "UV",
+        "UXV"
+      ],
+      "weight": 75
+    },
+    {
+      "name": "platlinePureAsteroid",
+      "outputs": [
+        {
+          "name": "Platinum",
+          "prefix": "dust",
+          "amount": 64,
+          "chance": 3800
+        },
+        {
+          "name": "Palladium",
+          "prefix": "dust",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Iridium",
+          "prefix": "dust",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "Osmium",
+          "prefix": "dust",
+          "amount": 64,
+          "chance": 500
+        },
+        {
+          "name": "Ruthenium",
+          "prefix": "dust",
+          "amount": 64,
+          "chance": 1200
+        },
+        {
+          "name": "Rhodium",
+          "prefix": "dust",
+          "amount": 64,
+          "chance": 1000
+        }
+      ],
+      "minSize": 10,
+      "maxSize": 30,
+      "minDistance": 25,
+      "maxDistance": 200,
+      "computation": 360,
+      "minModuleTier": 3,
+      "duration": 500,
+      "eut": 122880,
+      "scaleEUt": true,
+      "droneTiers": [
+        "ZPM",
+        "UEV"
+      ],
+      "weight": 60
+    },
+    {
+      "name": "magnesiumAsteroid",
+      "outputs": [
+        {
+          "name": "Magnesium",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 4000
+        },
+        {
+          "name": "Manganese",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Fluorspar",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 3000
+        }
+      ],
+      "minSize": 10,
+      "maxSize": 80,
+      "minDistance": 10,
+      "maxDistance": 200,
+      "computation": 60,
+      "minModuleTier": 1,
+      "duration": 400,
+      "eut": 7680,
+      "scaleEUt": true,
+      "droneTiers": [
+        "EV",
+        "UHV"
+      ],
+      "weight": 250
+    },
+    {
+      "name": "lanthanumAsteroid",
+      "outputs": [
+        {
+          "name": "Trinium",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "Lanthanum",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "orundum",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Silver",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 3500
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 120,
+      "minDistance": 30,
+      "maxDistance": 230,
+      "computation": 120,
+      "minModuleTier": 2,
+      "duration": 500,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "IV",
+        "UIV"
+      ],
+      "weight": 150
+    },
+    {
+      "name": "tengamAsteroid",
+      "outputs": [
+        {
+          "name": "Dilithium",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 100
+        },
+        {
+          "name": "orundum",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 1650
+        },
+        {
+          "name": "Vanadium",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 3500
+        },
+        {
+          "name": "Ytterbium",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 2250
+        },
+        {
+          "name": "TengamRaw",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 2500
+        }
+      ],
+      "minSize": 5,
+      "maxSize": 100,
+      "minDistance": 20,
+      "maxDistance": 100,
+      "computation": 120,
+      "minModuleTier": 3,
+      "duration": 500,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "UEV",
+        "UXV"
+      ],
+      "weight": 50
+    },
+    {
+      "name": "naquadahAsteroid",
+      "outputs": [
+        {
+          "name": "naquadahEarth",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 4000
+        },
+        {
+          "name": "enrichedNaquadahEarth",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 3500
+        },
+        {
+          "name": "naquadriaEarth",
+          "prefix": "ore",
+          "amount": 64,
+          "chance": 2500
+        }
+      ],
+      "minSize": 20,
+      "maxSize": 80,
+      "minDistance": 50,
+      "maxDistance": 150,
+      "computation": 240,
+      "minModuleTier": 1,
+      "duration": 1000,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "IV",
+        "UV"
+      ],
+      "weight": 200
+    },
+    {
+      "name": "draconicCoreRuin",
+      "outputs": [
+        {
+          "name": "DEFCDraconicSchematic",
+          "amount": 1,
+          "chance": 100
+        },
+        {
+          "name": "draconicCore",
+          "amount": 1,
+          "chance": 100
+        },
+        {
+          "name": "ZPM",
+          "amount": 1,
+          "chance": 9800
+        }
+      ],
+      "minSize": 1,
+      "maxSize": 1,
+      "minDistance": 50,
+      "maxDistance": 200,
+      "computation": 1000,
+      "minModuleTier": 3,
+      "duration": 2000,
+      "eut": 7864320,
+      "scaleEUt": false,
+      "droneTiers": [
+        "UHV",
+        "UIV"
+      ],
+      "weight": 1,
+      "requiresMod": "DraconicEvolution"
+    }
+  ]
+}
