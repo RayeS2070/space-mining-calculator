@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <expected>
+#include <initializer_list>
 #include <optional>
 #include <ostream>
 #include <string_view>
@@ -38,6 +39,21 @@ auto asteroid(int minDistance, int maxDistance, int weight, int duration = 100)
   a.weight = weight;
   return a;
 }
+
+auto withDrones(core::Asteroid a, int firstTier, int lastTier)
+    -> core::Asteroid {
+  a.firstDroneTier = firstTier;
+  a.lastDroneTier = lastTier;
+  return a;
+}
+
+auto drones(std::initializer_list<std::size_t> tiers) -> core::DroneSet {
+  core::DroneSet set;
+  for (const std::size_t tier : tiers) set.set(tier);
+  return set;
+}
+
+constexpr core::MinerModule kMiner{.tier = core::kModuleTierCount};
 
 TEST(FindAsteroid, ByName) {
   std::vector asteroids = {asteroid(1, 2, 1), asteroid(1, 2, 1)};
@@ -127,6 +143,68 @@ TEST(BestDistances, RepeatedTarget) {
   const std::vector asteroids = {asteroid(1, 10, 100), asteroid(1, 4, 100)};
   EXPECT_EQ(core::bestDistances(asteroids, Targets{0, 0}),
             core::bestDistances(asteroids, Targets{0}));
+}
+
+TEST(CommonDroneTiers, Overlap) {
+  const std::vector asteroids = {withDrones(asteroid(1, 10, 1), 0, 5),
+                                 withDrones(asteroid(1, 10, 1), 3, 8)};
+  EXPECT_EQ(core::commonDroneTiers(asteroids, Targets{0, 1}),
+            drones({3, 4, 5}));
+}
+
+TEST(CommonDroneTiers, Disjoint) {
+  const std::vector asteroids = {withDrones(asteroid(1, 10, 1), 0, 2),
+                                 withDrones(asteroid(1, 10, 1), 3, 5)};
+  EXPECT_TRUE(core::commonDroneTiers(asteroids, Targets{0, 1}).none());
+}
+
+TEST(IsMinable, NeedsDroneInRange) {
+  const core::Asteroid a = withDrones(asteroid(1, 10, 1), 2, 4);
+  EXPECT_FALSE(core::isMinable(a, kMiner, drones({1, 5})));
+  EXPECT_TRUE(core::isMinable(a, kMiner, drones({3})));
+}
+
+TEST(IsMinable, NeedsModuleTier) {
+  core::Asteroid a = asteroid(1, 10, 1);
+  a.minModuleTier = 2;
+  EXPECT_FALSE(core::isMinable(a, {.tier = 1}, drones({0})));
+  EXPECT_TRUE(core::isMinable(a, {.tier = 2}, drones({0})));
+}
+
+TEST(BestDistancesWithDrones, NotMinable) {
+  const std::vector asteroids = {withDrones(asteroid(1, 10, 1), 2, 4)};
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}, kMiner,
+                                {.drones = drones({1})}),
+            std::unexpected(core::DistanceError::notMinable));
+}
+
+// The competitor takes only the second tier: without that drone it is never
+// picked, and every distance of the target is as good.
+TEST(BestDistancesWithDrones, DroneLeavesCompetitorOut) {
+  const std::vector asteroids = {withDrones(asteroid(1, 10, 100), 0, 1),
+                                 withDrones(asteroid(1, 4, 100), 1, 1)};
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}, kMiner,
+                                {.drones = drones({0})}),
+            (Ranges{{.min = 1, .max = 10}}));
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}, kMiner,
+                                {.drones = drones({0, 1})}),
+            (Ranges{{.min = 5, .max = 10}}));
+}
+
+// An asteroid that two given drones reach is picked twice. Σ w·t at 1..5:
+// target 100·100, the competitor 100·100 with the first drone and
+// 100·⌈100/√2⌉ = 7100 with the second, 27100 in all; at 6..10:
+// 100·100 + 150·100 = 25000. With the first drone alone 1..5 has 20000.
+TEST(BestDistancesWithDrones, AsteroidCountsPerDrone) {
+  const std::vector asteroids = {withDrones(asteroid(1, 10, 100), 0, 0),
+                                 withDrones(asteroid(1, 5, 100), 0, 1),
+                                 withDrones(asteroid(6, 10, 150), 0, 0)};
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}, kMiner,
+                                {.drones = drones({0, 1})}),
+            (Ranges{{.min = 6, .max = 10}}));
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}, kMiner,
+                                {.drones = drones({0})}),
+            (Ranges{{.min = 1, .max = 5}}));
 }
 
 class EmbeddedCatalog : public testing::Test {

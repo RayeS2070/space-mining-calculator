@@ -70,17 +70,26 @@ smc                                  # summary of the data
 smc --list                           # every asteroid with its outputs
 smc --show coalAsteroid tinAsteroid  # the named asteroids
 smc --at 50                          # the asteroids reachable at distance 50
-smc --best-distance saltAsteroid     # the best distances for the asteroid
+smc --best-distance saltAsteroid --drones LV MV  # the best distances with these drones
+smc --drone-list                     # the drone tier names
 ```
 
 `--best-distance` prints every distance in the targets' common range where they come up most
-often per tick, as ranges: `241-250`, or `1-3, 7-10`. While all targets are reachable, that is
-where Σ weight · duration of everything reachable is least (see the long-run rate above). For
-now each asteroid counts once with its base duration, as if one drone tier reached it, and the
-module tier, voltage and mods filter nothing.
+often per tick, as ranges (`201-250`, or `1-3, 7-10`), and the drone tiers that reach all the
+targets.
 
-Exit codes: 0 done, 1 the command failed (unknown asteroid, unreadable data), 2 a bad command
-line.
+With `--drones`, the module may pick the recipes of these drone tiers: an asteroid that two of
+them reach is drawn twice, each time with its own duration. With the drones fixed and every
+target reachable, the best distances are where Σ weight · time of the candidate recipes is
+least (see the long-run rate above). The module is taken as T3, which in the current data
+filters nothing but by the drones. Tier names are case-insensitive.
+
+Without `--drones` the answer is a rough estimate: each asteroid counts once with its base
+duration, which no real drone set gives. For salt it says 1, while with an LV drone alone the
+best is 201-250.
+
+Exit codes: 0 done, 1 the command failed (unknown asteroid, unreadable data, targets the drones
+do not mine), 2 a bad command line.
 
 ## Data
 

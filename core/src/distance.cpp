@@ -8,6 +8,8 @@
 #include <span>
 #include <vector>
 
+#include "core/mechanics.hpp"
+
 namespace core {
 
 namespace {
@@ -23,6 +25,41 @@ auto weightedTime(std::span<const Asteroid> asteroids, int distance)
     }
   }
   return sum;
+}
+
+// Σ w·t of the recipes the module may pick with the settings.
+auto weightedTime(std::span<const Recipe> recipes, const MinerModule& miner,
+                  const Settings& settings) -> std::int64_t {
+  std::int64_t sum = 0;
+  for (const Recipe& r : recipes) {
+    if (isCandidate(r, miner, settings)) {
+      sum += static_cast<std::int64_t>(r.weight) *
+             recipeTime(r.duration, settings.plasmaTier, settings.overdrive);
+    }
+  }
+  return sum;
+}
+
+// The distances of the range with the least time(distance), as ascending
+// disjoint ranges.
+auto leastTime(const DistanceRange& range, auto time)
+    -> std::vector<DistanceRange> {
+  std::vector<DistanceRange> best;
+  std::int64_t bestTime = std::numeric_limits<std::int64_t>::max();
+  for (int distance = range.min; distance <= range.max; ++distance) {
+    const std::int64_t t = time(distance);
+    if (t < bestTime) {
+      bestTime = t;
+      best.assign({{.min = distance, .max = distance}});
+    } else if (t == bestTime) {
+      if (best.back().max == distance - 1) {
+        best.back().max = distance;
+      } else {
+        best.push_back({.min = distance, .max = distance});
+      }
+    }
+  }
+  return best;
 }
 
 }  // namespace
@@ -49,28 +86,57 @@ auto commonDistanceRange(std::span<const Asteroid> asteroids,
   return range;
 }
 
+auto commonDroneTiers(std::span<const Asteroid> asteroids,
+                      std::span<const std::size_t> targets) -> DroneSet {
+  DroneSet common;
+  common.set();
+  for (const std::size_t i : targets) {
+    const Asteroid& a = asteroids[i];
+    DroneSet reach;
+    for (int tier = a.firstDroneTier; tier <= a.lastDroneTier; ++tier) {
+      reach.set(static_cast<std::size_t>(tier));
+    }
+    common &= reach;
+  }
+  return common;
+}
+
+auto isMinable(const Asteroid& asteroid, const MinerModule& miner,
+               const DroneSet& drones) -> bool {
+  const Settings settings{.distance = asteroid.minDistance, .drones = drones};
+  return std::ranges::any_of(expand(asteroid, 0), [&](const Recipe& r) {
+    return isCandidate(r, miner, settings);
+  });
+}
+
 auto bestDistances(std::span<const Asteroid> asteroids,
                    std::span<const std::size_t> targets)
     -> std::expected<std::vector<DistanceRange>, DistanceError> {
   const auto common = commonDistanceRange(asteroids, targets);
   if (!common) return std::unexpected(common.error());
 
-  std::vector<DistanceRange> best;
-  std::int64_t bestTime = std::numeric_limits<std::int64_t>::max();
-  for (int distance = common->min; distance <= common->max; ++distance) {
-    const std::int64_t time = weightedTime(asteroids, distance);
-    if (time < bestTime) {
-      bestTime = time;
-      best.assign({{.min = distance, .max = distance}});
-    } else if (time == bestTime) {
-      if (best.back().max == distance - 1) {
-        best.back().max = distance;
-      } else {
-        best.push_back({.min = distance, .max = distance});
-      }
+  return leastTime(
+      *common, [&](int distance) { return weightedTime(asteroids, distance); });
+}
+
+auto bestDistances(std::span<const Asteroid> asteroids,
+                   std::span<const std::size_t> targets,
+                   const MinerModule& miner, const Settings& settings)
+    -> std::expected<std::vector<DistanceRange>, DistanceError> {
+  const auto common = commonDistanceRange(asteroids, targets);
+  if (!common) return std::unexpected(common.error());
+  for (const std::size_t i : targets) {
+    if (!isMinable(asteroids[i], miner, settings.drones)) {
+      return std::unexpected(DistanceError::notMinable);
     }
   }
-  return best;
+
+  const std::vector<Recipe> recipes = expand(asteroids);
+  Settings at = settings;
+  return leastTime(*common, [&](int distance) {
+    at.distance = distance;
+    return weightedTime(recipes, miner, at);
+  });
 }
 
 }  // namespace core

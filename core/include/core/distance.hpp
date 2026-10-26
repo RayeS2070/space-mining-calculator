@@ -11,12 +11,12 @@
 // Choice of the mining distance for chosen target asteroids.
 //
 // The yield per tick is Σ w·E / Σ w·t over the candidate recipes (README).
-// While every target is reachable, the numerator does not depend on the
-// distance, so the best distances are those with the least Σ w·t: the
-// summed weight·time of everything reachable there.
+// With the drones fixed and every target reachable, the target recipes, and
+// so the numerator, do not depend on the distance: the best distances are
+// those with the least Σ w·t over the candidates there.
 //
-// Simplified so far: each asteroid counts once with its base duration, as if
-// one drone tier reached it; module tier, voltage and mods do not filter.
+// Without the drones, a rougher estimate: each asteroid counts once with its
+// base duration, as if one drone tier reached it, and nothing else filters.
 
 namespace core {
 
@@ -32,6 +32,7 @@ struct DistanceRange {
 enum class DistanceError {
   noTargets,      // no target asteroid given
   noCommonRange,  // the targets share no distance
+  notMinable,     // a target has no recipe the module may pick
 };
 
 // Whether the asteroid can be picked at the distance.
@@ -42,11 +43,29 @@ auto commonDistanceRange(std::span<const Asteroid> asteroids,
                          std::span<const std::size_t> targets)
     -> std::expected<DistanceRange, DistanceError>;
 
+// The drone tiers that reach every target; all tiers for no targets.
+auto commonDroneTiers(std::span<const Asteroid> asteroids,
+                      std::span<const std::size_t> targets) -> DroneSet;
+
+// Whether the module may pick some recipe of the asteroid with the drones,
+// at the asteroid's own distances.
+auto isMinable(const Asteroid& asteroid, const MinerModule& miner,
+               const DroneSet& drones) -> bool;
+
 // Every distance in the common range of the targets with the least Σ w·t,
 // as ascending disjoint ranges: the best is often a plateau, sometimes
 // several. targets index asteroids; a repeated one changes nothing.
+// The rough estimate: every asteroid once, base durations.
 auto bestDistances(std::span<const Asteroid> asteroids,
                    std::span<const std::size_t> targets)
+    -> std::expected<std::vector<DistanceRange>, DistanceError>;
+
+// The same over the recipes the module may pick with settings.drones, an
+// asteroid once per drone tier that reaches it; times with the plasma and
+// overdrive of the settings. settings.distance is ignored: it is searched.
+auto bestDistances(std::span<const Asteroid> asteroids,
+                   std::span<const std::size_t> targets,
+                   const MinerModule& miner, const Settings& settings)
     -> std::expected<std::vector<DistanceRange>, DistanceError>;
 
 }  // namespace core

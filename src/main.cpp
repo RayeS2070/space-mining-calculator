@@ -3,10 +3,12 @@
 #include <algorithm>
 #include <array>
 #include <boost/program_options.hpp>
+#include <cctype>
 #include <cstddef>
 #include <cstdlib>
 #include <expected>
 #include <format>
+#include <optional>
 #include <print>
 #include <ranges>
 #include <span>
@@ -30,8 +32,12 @@ constexpr int kFailure = 1;     // the command could not be done
 constexpr int kBadOptions = 2;  // the command line is wrong
 
 // Commands: at most one per run.
-constexpr std::array<const char*, 4> kCommands = {"list", "show", "at",
-                                                  "best-distance"};
+constexpr std::array<const char*, 5> kCommands = {
+    "list", "show", "at", "best-distance", "drone-list"};
+
+// No option for the module tier yet: T3 filters the fewest recipes, in the
+// current data none but by the drones.
+constexpr core::MinerModule kMiner{.tier = core::kModuleTierCount};
 
 constexpr std::size_t kLineWidth = 100;
 constexpr std::string_view kIndent = "   ";
@@ -69,6 +75,60 @@ auto formatRange(const core::DistanceRange& range) -> std::string {
                                 : std::format("{}-{}", range.min, range.max);
 }
 
+// Runs of adjacent tiers: "LV-IV, UV"; "none" for an empty set.
+auto formatDrones(const core::DroneSet& drones) -> std::string {
+  std::vector<std::string> runs;
+  for (int tier = 0; tier < core::kDroneTierCount; ++tier) {
+    if (!drones.test(static_cast<std::size_t>(tier))) continue;
+    int last = tier;
+    while (last + 1 < core::kDroneTierCount &&
+           drones.test(static_cast<std::size_t>(last + 1))) {
+      ++last;
+    }
+    runs.push_back(last == tier
+                       ? std::string(core::kDroneTierNames[tier])
+                       : std::format("{}-{}", core::kDroneTierNames[tier],
+                                     core::kDroneTierNames[last]));
+    tier = last;
+  }
+  return runs.empty() ? "none" : join(runs);
+}
+
+auto equalsIgnoringCase(std::string_view a, std::string_view b) -> bool {
+  return std::ranges::equal(a, b, [](unsigned char x, unsigned char y) {
+    return std::tolower(x) == std::tolower(y);
+  });
+}
+
+// The named drone tiers, in any letter case. The error names every unknown
+// one.
+auto parseDrones(std::span<const std::string> names)
+    -> std::expected<core::DroneSet, std::string> {
+  core::DroneSet drones;
+  std::vector<std::string_view> unknown;
+  for (const std::string& name : names) {
+    const auto it = std::ranges::find_if(
+        core::kDroneTierNames,
+        [&](std::string_view tier) { return equalsIgnoringCase(tier, name); });
+    if (it == core::kDroneTierNames.end()) {
+      unknown.push_back(name);
+    } else {
+      drones.set(static_cast<std::size_t>(it - core::kDroneTierNames.begin()));
+    }
+  }
+  if (!unknown.empty()) {
+    return std::unexpected(
+        std::format("unknown drone tier{} {:n}; see --drone-list",
+                    unknown.size() > 1 ? "s" : "", unknown));
+  }
+  return drones;
+}
+
+auto formatDroneRange(const core::Asteroid& a) -> std::string {
+  return std::format("{}-{}", core::kDroneTierNames[a.firstDroneTier],
+                     core::kDroneTierNames[a.lastDroneTier]);
+}
+
 // The text left-aligned in the width. Not "{:<{}}": clang 23 with libstdc++ 16
 // rejects every dynamic width in C++26, as the definition of
 // basic_format_parse_context::__check_dynamic_spec comes after its use.
@@ -81,11 +141,9 @@ auto padRight(std::string_view text, std::size_t width) -> std::string {
 auto printRow(const core::Asteroid& a, std::size_t nameWidth) -> void {
   std::println(kRowFormat, padRight(a.name, nameWidth),
                formatRange({.min = a.minDistance, .max = a.maxDistance}),
-               std::format("{}-{}", core::kDroneTierNames[a.firstDroneTier],
-                           core::kDroneTierNames[a.lastDroneTier]),
-               std::format("T{}", a.minModuleTier), a.weight,
-               std::format("{}-{}", a.minSize, a.maxSize), a.duration, a.eut,
-               a.requiresMod.value_or(""));
+               formatDroneRange(a), std::format("T{}", a.minModuleTier),
+               a.weight, std::format("{}-{}", a.minSize, a.maxSize), a.duration,
+               a.eut, a.requiresMod.value_or(""));
 
   // The outputs below the row, wrapped at kLineWidth.
   std::string line(kIndent);
@@ -135,7 +193,8 @@ auto findAll(const core::Catalog& catalog, std::span<const std::string> names)
 }
 
 auto describe(core::DistanceError error, const core::Catalog& catalog,
-              std::span<const std::size_t> targets) -> std::string {
+              std::span<const std::size_t> targets,
+              const core::DroneSet& drones) -> std::string {
   switch (error) {
     case core::DistanceError::noTargets:
       return "no target asteroid given";
@@ -148,6 +207,17 @@ auto describe(core::DistanceError error, const core::Catalog& catalog,
                      "{} {}", a.name,
                      formatRange({.min = a.minDistance, .max = a.maxDistance}));
                })));
+    case core::DistanceError::notMinable:
+      return std::format("the drones {} mine none of: {}", formatDrones(drones),
+                         join(targets | std::views::filter([&](std::size_t i) {
+                                return !core::isMinable(catalog.asteroids[i],
+                                                        kMiner, drones);
+                              }) |
+                              std::views::transform([&](std::size_t i) {
+                                const core::Asteroid& a = catalog.asteroids[i];
+                                return std::format("{} (takes {})", a.name,
+                                                   formatDroneRange(a));
+                              })));
   }
   std::unreachable();
 }
@@ -184,20 +254,40 @@ auto at(const core::Catalog& catalog, int distance) -> int {
   return EXIT_SUCCESS;
 }
 
+// Without drones, the rough estimate of core::bestDistances.
 auto bestDistance(const core::Catalog& catalog,
-                  std::span<const std::string> names) -> int {
+                  std::span<const std::string> names,
+                  const std::optional<core::DroneSet>& drones) -> int {
   const auto targets = findAll(catalog, names);
-
   if (!targets) {
     spdlog::error("{}", targets.error());
     return kFailure;
   }
-  const auto best = core::bestDistances(catalog.asteroids, *targets);
+  const auto best = drones ? core::bestDistances(catalog.asteroids, *targets,
+                                                 kMiner, {.drones = *drones})
+                           : core::bestDistances(catalog.asteroids, *targets);
   if (!best) {
-    spdlog::error("{}", describe(best.error(), catalog, *targets));
+    spdlog::error("{}", describe(best.error(), catalog, *targets,
+                                 drones.value_or(core::DroneSet{})));
     return kFailure;
   }
-  std::println("{}", join(*best | std::views::transform(formatRange)));
+  std::println("distance: {}",
+               join(*best | std::views::transform(formatRange)));
+
+  const core::DroneSet common =
+      core::commonDroneTiers(catalog.asteroids, *targets);
+  if (common.any()) {
+    std::println("drones for all the targets: {}", formatDrones(common));
+  } else {
+    std::println("drones for all the targets: none, one drone each is needed");
+  }
+  return EXIT_SUCCESS;
+}
+
+auto droneList() -> int {
+  for (const std::string_view tier : core::kDroneTierNames) {
+    std::println("{}", tier);
+  }
   return EXIT_SUCCESS;
 }
 
@@ -214,14 +304,18 @@ auto main(int argc, char** argv) -> int {
     ("at", po::value<int>()->value_name("DISTANCE"),
         "list the asteroids reachable at the distance")
     ("best-distance", po::value<std::vector<std::string>>()->multitoken()->value_name("NAME..."),
-        "the distances where the named asteroids come up most often per tick");
+        "the distances where the named asteroids come up most often per tick")
+    ("drone-list", "list the drone tiers");
   // clang-format on
   po::options_description options("Options");
   // clang-format off
   options.add_options()
     ("help,h", "show this help")
     ("data", po::value<std::string>()->value_name("FILE"),
-        "read the asteroids from the file instead of the built-in data");
+        "read the asteroids from the file instead of the built-in data")
+    ("drones", po::value<std::vector<std::string>>()->multitoken()->value_name("TIER..."),
+        "with --best-distance: the drones in the module, e.g. EV IV; without, "
+        "a rough estimate that counts each asteroid once");
   // clang-format on
   po::options_description all;
   all.add(commands).add(options);
@@ -255,6 +349,21 @@ auto main(int argc, char** argv) -> int {
                        })));
     return kBadOptions;
   }
+  if (args.contains("drones") && !args.contains("best-distance")) {
+    spdlog::error("--drones goes with --best-distance");
+    return kBadOptions;
+  }
+  std::optional<core::DroneSet> drones;
+  if (args.contains("drones")) {
+    const auto parsed =
+        parseDrones(args["drones"].as<std::vector<std::string>>());
+    if (!parsed) {
+      spdlog::error("{}", parsed.error());
+      return kBadOptions;
+    }
+    drones = *parsed;
+  }
+  if (args.contains("drone-list")) return droneList();
 
   const auto catalog = args.contains("data")
                            ? reader::readCatalog(args["data"].as<std::string>())
@@ -270,8 +379,8 @@ auto main(int argc, char** argv) -> int {
   }
   if (args.contains("at")) return at(*catalog, args["at"].as<int>());
   if (args.contains("best-distance")) {
-    return bestDistance(*catalog,
-                        args["best-distance"].as<std::vector<std::string>>());
+    return bestDistance(
+        *catalog, args["best-distance"].as<std::vector<std::string>>(), drones);
   }
 
   std::println("{} asteroids, {} recipes, GT5U {}. See --help for commands.",
