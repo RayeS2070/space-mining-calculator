@@ -181,6 +181,26 @@ cmake --build --preset clang_debug
 ./build/linux/clang_debug/ui/smc_ui                 # desktop UI
 ```
 
+### Install
+
+The data is built into the programs, so an install is the programs and the documents. Each
+preset installs into its own `install/<platform>/<preset>`; `--prefix` puts it elsewhere.
+
+```sh
+cmake --preset clang_release && cmake --build --preset clang_release
+cmake --install build/linux/clang_release --strip            # into install/linux/clang_release
+cmake --install build/linux/clang_release --prefix ~/.local  # or anywhere
+```
+
+| Path | What |
+| --- | --- |
+| `bin/smc` | command line tool |
+| `bin/smc_ui` | desktop UI |
+| `share/doc/space-mining-calculator/` | README and LICENSE |
+
+The programs link SDL and the rest statically; the UI needs only the system's OpenGL and X11
+or Wayland libraries.
+
 ### Tests
 
 Unit tests use [GoogleTest](https://github.com/google/googletest) and build natively, on by
@@ -206,7 +226,14 @@ python3 -m http.server -d build/wasm/wasm_release/ui
 # open http://localhost:8000/smc_ui.html
 ```
 
-The browser build has the UI only: the command line tool needs a terminal.
+The browser build has the UI only: the command line tool needs a terminal. Its install is a site
+to serve as it is, GitHub Pages included: `index.html` (the page), `smc_ui.js`, `smc_ui.wasm`.
+
+```sh
+cmake --install build/wasm/wasm_release          # into install/wasm/wasm_release
+python3 -m http.server -d install/wasm/wasm_release
+# open http://localhost:8000/
+```
 
 ## License
 

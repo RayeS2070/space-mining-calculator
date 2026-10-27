@@ -74,4 +74,16 @@ if(EMSCRIPTEN)
     )
     set_property(TARGET smc_ui APPEND PROPERTY LINK_DEPENDS
             ${CMAKE_CURRENT_SOURCE_DIR}/shell.html)
+
+    # The browser build is a site: at the top of the prefix, the page as
+    # index.html, so the directory can be served as it is (GitHub Pages too).
+    # The page loads smc_ui.js by name, which keeps it.
+    install(FILES $<TARGET_FILE:smc_ui> DESTINATION . RENAME index.html)
+    install(FILES
+            $<TARGET_FILE_DIR:smc_ui>/smc_ui.js
+            $<TARGET_FILE_DIR:smc_ui>/smc_ui.wasm
+            DESTINATION .
+    )
+else()
+    install(TARGETS smc_ui RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()

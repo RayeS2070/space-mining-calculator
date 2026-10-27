@@ -29,6 +29,7 @@ if(SMC_SANITIZE)
         add_compile_definitions(_GLIBCXX_SANITIZE_VECTOR)
 endif()
 
+include(GNUInstallDirs)
 include(cmake/CPM.cmake)
 
 # Only the Boost libraries we use are configured:
@@ -73,6 +74,7 @@ if(NOT EMSCRIPTEN)
                 Boost::json
                 spdlog::spdlog
         )
+        install(TARGETS smc RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
 
 add_subdirectory(ui)
@@ -83,3 +85,9 @@ if(SMC_BUILD_TESTS AND NOT EMSCRIPTEN)
         enable_testing()
         add_subdirectory(tests)
 endif()
+
+# The data is embedded in the programs: nothing to install besides them and
+# the documents. The license is the repository's, one level up.
+install(FILES README.md ${PROJECT_SOURCE_DIR}/../LICENSE
+        DESTINATION ${CMAKE_INSTALL_DOCDIR}
+)
