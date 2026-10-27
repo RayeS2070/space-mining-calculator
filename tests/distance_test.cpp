@@ -104,27 +104,27 @@ TEST(CommonDistanceRange, Disjoint) {
 
 TEST(BestDistances, Errors) {
   const std::vector asteroids = {asteroid(1, 4, 1), asteroid(5, 10, 1)};
-  EXPECT_EQ(core::bestDistances(asteroids, {}),
+  EXPECT_EQ(core::bestDistances(asteroids, {}, kMiner),
             std::unexpected(core::DistanceError::noTargets));
-  EXPECT_EQ(core::bestDistances(asteroids, Targets{0, 1}),
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0, 1}, kMiner),
             std::unexpected(core::DistanceError::noCommonRange));
 }
 
 TEST(BestDistances, AloneIsBest) {
   const std::vector asteroids = {asteroid(1, 10, 100), asteroid(1, 4, 100)};
-  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}),
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}, kMiner),
             (Ranges{{.min = 5, .max = 10}}));
 }
 
 TEST(BestDistances, ReachesMaxDistance) {
   const std::vector asteroids = {asteroid(1, 10, 100), asteroid(1, 9, 100)};
-  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}),
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}, kMiner),
             (Ranges{{.min = 10, .max = 10}}));
 }
 
 TEST(BestDistances, SplitPlateau) {
   const std::vector asteroids = {asteroid(1, 10, 100), asteroid(4, 6, 100)};
-  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}),
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}, kMiner),
             (Ranges{{.min = 1, .max = 3}, {.min = 7, .max = 10}}));
 }
 
@@ -135,14 +135,14 @@ TEST(BestDistances, ByTimeNotWeight) {
   const std::vector asteroids = {asteroid(1, 10, 100, 100),
                                  asteroid(1, 5, 100, 10),
                                  asteroid(6, 10, 50, 1000)};
-  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}),
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}, kMiner),
             (Ranges{{.min = 1, .max = 5}}));
 }
 
 TEST(BestDistances, RepeatedTarget) {
   const std::vector asteroids = {asteroid(1, 10, 100), asteroid(1, 4, 100)};
-  EXPECT_EQ(core::bestDistances(asteroids, Targets{0, 0}),
-            core::bestDistances(asteroids, Targets{0}));
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0, 0}, kMiner),
+            core::bestDistances(asteroids, Targets{0}, kMiner));
 }
 
 TEST(CommonDroneTiers, Overlap) {
@@ -158,17 +158,75 @@ TEST(CommonDroneTiers, Disjoint) {
   EXPECT_TRUE(core::commonDroneTiers(asteroids, Targets{0, 1}).none());
 }
 
-TEST(IsMinable, NeedsDroneInRange) {
-  const core::Asteroid a = withDrones(asteroid(1, 10, 1), 2, 4);
-  EXPECT_FALSE(core::isMinable(a, kMiner, drones({1, 5})));
-  EXPECT_TRUE(core::isMinable(a, kMiner, drones({3})));
-}
-
-TEST(IsMinable, NeedsModuleTier) {
+TEST(FitsModule, ByMinModuleTier) {
   core::Asteroid a = asteroid(1, 10, 1);
   a.minModuleTier = 2;
-  EXPECT_FALSE(core::isMinable(a, {.tier = 1}, drones({0})));
-  EXPECT_TRUE(core::isMinable(a, {.tier = 2}, drones({0})));
+  EXPECT_FALSE(core::fitsModule(a, {.tier = 1}));
+  EXPECT_TRUE(core::fitsModule(a, {.tier = 2}));
+  EXPECT_TRUE(core::fitsModule(a, {.tier = 3}));
+}
+
+TEST(CanMine, NeedsDroneInRange) {
+  const core::Asteroid a = withDrones(asteroid(1, 10, 1), 2, 4);
+  EXPECT_EQ(core::canMine(a, kMiner, drones({1, 5})),
+            std::unexpected(core::Unminable::noDrone));
+  EXPECT_TRUE(core::canMine(a, kMiner, drones({3})));
+}
+
+TEST(CanMine, NeedsModuleTier) {
+  core::Asteroid a = asteroid(1, 10, 1);
+  a.minModuleTier = 2;
+  EXPECT_EQ(core::canMine(a, {.tier = 1}, drones({0})),
+            std::unexpected(core::Unminable::moduleTier));
+  EXPECT_TRUE(core::canMine(a, {.tier = 2}, drones({0})));
+}
+
+// The module tier is checked before the drones.
+TEST(CanMine, ModuleTierFirst) {
+  core::Asteroid a = withDrones(asteroid(1, 10, 1), 2, 4);
+  a.minModuleTier = 3;
+  EXPECT_EQ(core::canMine(a, {.tier = 1}, drones({0})),
+            std::unexpected(core::Unminable::moduleTier));
+}
+
+// EU/t grows with the drone tier: 400000 at the first fits T1 (524288 EU/t),
+// ⌈400000·√2⌉ = 565686 at the second does not.
+TEST(CanMine, Voltage) {
+  core::Asteroid a = withDrones(asteroid(1, 10, 1), 0, 1);
+  a.eut = 400'000;
+  a.scaleEUt = true;
+  EXPECT_TRUE(core::canMine(a, {.tier = 1}, drones({0})));
+  EXPECT_EQ(core::canMine(a, {.tier = 1}, drones({1})),
+            std::unexpected(core::Unminable::voltage));
+  EXPECT_TRUE(core::canMine(a, {.tier = 2}, drones({1})));
+}
+
+// A competitor the module tier does not allow is never picked.
+TEST(BestDistances, ModuleTierLeavesCompetitorOut) {
+  std::vector asteroids = {asteroid(1, 10, 100), asteroid(1, 4, 100)};
+  asteroids[1].minModuleTier = 2;
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}, {.tier = 1}),
+            (Ranges{{.min = 1, .max = 10}}));
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}, {.tier = 2}),
+            (Ranges{{.min = 5, .max = 10}}));
+}
+
+TEST(BestDistances, TargetAboveModule) {
+  std::vector asteroids = {asteroid(1, 10, 100)};
+  asteroids[0].minModuleTier = 3;
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}, {.tier = 2}),
+            std::unexpected(core::DistanceError::notMinable));
+}
+
+TEST(BestDistancesWithDrones, ModuleTierLeavesCompetitorOut) {
+  std::vector asteroids = {asteroid(1, 10, 100), asteroid(1, 4, 100)};
+  asteroids[1].minModuleTier = 2;
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}, {.tier = 1},
+                                {.drones = drones({0})}),
+            (Ranges{{.min = 1, .max = 10}}));
+  EXPECT_EQ(core::bestDistances(asteroids, Targets{0}, {.tier = 2},
+                                {.drones = drones({0})}),
+            (Ranges{{.min = 5, .max = 10}}));
 }
 
 TEST(BestDistancesWithDrones, NotMinable) {
@@ -213,10 +271,13 @@ class EmbeddedCatalog : public testing::Test {
     static const core::Catalog c = reader::embeddedCatalog().value();
     return c;
   }
-  static auto best(std::string_view name) -> std::optional<Ranges> {
+  static auto best(std::string_view name,
+                   const core::MinerModule& miner = kMiner)
+      -> std::optional<Ranges> {
     const auto i = core::findAsteroid(catalog().asteroids, name);
     if (!i) return std::nullopt;
-    const auto ranges = core::bestDistances(catalog().asteroids, Targets{*i});
+    const auto ranges =
+        core::bestDistances(catalog().asteroids, Targets{*i}, miner);
     if (!ranges) return std::nullopt;
     return *ranges;
   }
@@ -235,6 +296,14 @@ TEST_F(EmbeddedCatalog, Salt) {
 
 TEST_F(EmbeddedCatalog, Magnesium) {
   EXPECT_EQ(best("magnesiumAsteroid"), (Ranges{{.min = 13, .max = 16}}));
+}
+
+// Every asteroid near 13..16 is T1. At 181..200 silicon, draconic, cheese and
+// lanthanum need T2, platlinePure and draconicCoreRuin T3: a T1 module never
+// picks them, and the rest there weighs less.
+TEST_F(EmbeddedCatalog, MagnesiumT1) {
+  EXPECT_EQ(best("magnesiumAsteroid", {.tier = 1}),
+            (Ranges{{.min = 181, .max = 200}}));
 }
 
 }  // namespace

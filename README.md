@@ -71,6 +71,8 @@ smc --list                           # every asteroid with its outputs
 smc --show coalAsteroid tinAsteroid  # the named asteroids
 smc --at 50                          # the asteroids reachable at distance 50
 smc --best-distance saltAsteroid --drones LV MV  # the best distances with these drones
+smc --best-distance saltAsteroid --module-tier 1  # for a T1 mining module
+smc --at 50 --module-tier 1          # what a T1 module may mine at distance 50
 smc --drone-list                     # the drone tier names
 ```
 
@@ -81,15 +83,50 @@ targets.
 With `--drones`, the module may pick the recipes of these drone tiers: an asteroid that two of
 them reach is drawn twice, each time with its own duration. With the drones fixed and every
 target reachable, the best distances are where Σ weight · time of the candidate recipes is
-least (see the long-run rate above). The module is taken as T3, which in the current data
-filters nothing but by the drones. Tier names are case-insensitive.
+least (see the long-run rate above). Tier names are case-insensitive.
 
-Without `--drones` the answer is a rough estimate: each asteroid counts once with its base
-duration, which no real drone set gives. For salt it says 1, while with an LV drone alone the
+`--module-tier` (1 to 3, default 3) is the mining module's tier: asteroids above it are never
+picked, and with `--drones` neither are recipes over the module's voltage. It matters: for
+magnesium a T1 module does best at 181-200, a T2 or T3 one at 13-16. A target the module cannot
+mine is an error that names why (module tier, drones or voltage).
+
+Without `--drones` the answer is a rough estimate: each asteroid the module tier allows counts
+once with its base duration, which no real drone set gives, and the voltage does not filter. For salt it says 1, while with an LV drone alone the
 best is 201-250.
 
 Exit codes: 0 done, 1 the command failed (unknown asteroid, unreadable data, targets the drones
 do not mine), 2 a bad command line.
+
+### JSON
+
+`--json` makes every answer one line of JSON on stdout, errors included, for scripts:
+
+```sh
+$ smc --json --best-distance saltAsteroid --drones LV
+{"distances":[{"min":201,"max":250}],"commonDrones":["LV","MV","HV","EV","IV"],"moduleTier":3,"drones":["LV"]}
+$ smc --json --show nope
+{"error":"unknown asteroid \"nope\"; see --list"}
+```
+
+| Command | Answer |
+| --- | --- |
+| none | `{"asteroids", "recipes", "gt5u"}` |
+| `--list`, `--show`, `--at` | an array of asteroids: the fields of `data/asteroids.json` (ranges as `{"min", "max"}`, drones as `{"first", "last"}`), each output with its exact `share` (0..1) |
+| `--best-distance` | `{"distances": [{"min", "max"}...], "commonDrones": [...], "moduleTier", "drones"}`; `drones` is `null` for the rough estimate |
+| `--drone-list` | an array of tier names |
+| an error | `{"error": message}`, with the same exit code as without `--json` |
+
+## UI
+
+`smc_ui` does what the command line does, with widgets: on the left the module tier, the
+drones, the targets and their best distances; on the right every asteroid in a table. Tick an
+asteroid's box to make it a target. Click a column header to sort by it, shift-click to add a
+second key; columns can be resized, moved and hidden (right-click the header). The filter
+matches names and outputs (`-word` excludes); the table can also show only what is reachable
+at a distance or what the module tier allows. Asteroids the module tier does not allow are
+greyed out, with the reason in a tooltip; hovering the outputs lists them with their exact
+shares. The UI and the command line tool word results and errors alike: the texts come from
+one library (`report`).
 
 ## Data
 
@@ -133,14 +170,15 @@ CMake ≥ 3.30, Ninja and a compiler with C++26 support. Dependencies come throu
 the development files SDL builds against (X11 and/or Wayland).
 
 Build trees go to `build/<platform>/<preset>`, installs to `install/<platform>/<preset>`.
-Native presets are named after their platform (`linux_*`) and show up only on that host.
+Native presets are named compiler_config (`clang_debug`, `gcc_release`, …) and show up only on a
+host of their platform; the platform names the build directory.
 
 ```sh
 cmake --list-presets             # the presets for this host
-cmake --preset linux_clang_debug
-cmake --build --preset linux_clang_debug
-./build/linux/linux_clang_debug/smc                       # command line tool
-./build/linux/linux_clang_debug/ui/space_mining_calc_ui   # desktop UI
+cmake --preset clang_debug
+cmake --build --preset clang_debug
+./build/linux/clang_debug/smc                       # command line tool
+./build/linux/clang_debug/ui/smc_ui                 # desktop UI
 ```
 
 ### Tests
@@ -149,8 +187,8 @@ Unit tests use [GoogleTest](https://github.com/google/googletest) and build nati
 default (`-DSMC_BUILD_TESTS=OFF` turns them off). Every native preset has a test preset:
 
 ```sh
-ctest --preset linux_clang_debug
-./build/linux/linux_clang_debug/tests/smc_tests --gtest_also_run_disabled_tests
+ctest --preset clang_debug
+./build/linux/clang_debug/tests/smc_tests --gtest_also_run_disabled_tests
 ```
 
 Tests named `DISABLED_` describe behaviour that is wanted but not written yet.
@@ -165,7 +203,7 @@ export EMSCRIPTEN_ROOT=/usr/lib/emscripten
 cmake --preset wasm_release       # or wasm_debug
 cmake --build --preset wasm_release
 python3 -m http.server -d build/wasm/wasm_release/ui
-# open http://localhost:8000/space_mining_calc_ui.html
+# open http://localhost:8000/smc_ui.html
 ```
 
 The browser build has the UI only: the command line tool needs a terminal.

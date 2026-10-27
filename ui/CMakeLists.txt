@@ -1,7 +1,8 @@
+# The calculator's UI: Dear ImGui over SDL3, OpenGL 3 on the desktop and
+# WebGL 2 in the browser.
+
 # SDL3 is built from source on every platform: a regular target, so the
 # build graph knows its headers before anything is compiled.
-# Desktop renders with OpenGL 3, the browser with WebGL 2.
-
 CPMAddPackage(URI "gh:libsdl-org/SDL#release-3.4.18"
         OPTIONS
         "SDL_SHARED OFF"
@@ -13,6 +14,9 @@ CPMAddPackage(URI "gh:libsdl-org/SDL#release-3.4.18"
 )
 CPMAddPackage("gh:ocornut/imgui#v1.93.0")
 
+# ImGui has no CMake build of its own: the core and the two backends.
+# imgui_demo.cpp stays in for the empty ShowDemoWindow() and friends that
+# IMGUI_DISABLE_DEMO_WINDOWS leaves there; imgui.cpp still refers to them.
 add_library(imgui STATIC
         ${imgui_SOURCE_DIR}/imgui.cpp
         ${imgui_SOURCE_DIR}/imgui_demo.cpp
@@ -27,7 +31,11 @@ target_include_directories(imgui
         ${imgui_SOURCE_DIR}
         ${imgui_SOURCE_DIR}/backends
 )
-target_compile_definitions(imgui PUBLIC IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
+target_compile_definitions(imgui
+        PUBLIC
+        IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+        IMGUI_DISABLE_DEMO_WINDOWS
+)
 # Without it CMake passes the compiler's default standard, C++98 for em++.
 target_compile_features(imgui PUBLIC cxx_std_17)
 
@@ -37,24 +45,33 @@ if(NOT EMSCRIPTEN)
     target_link_libraries(imgui PUBLIC OpenGL::GL)
 endif()
 
-add_executable(space_mining_calc_ui main.cpp)
-target_compile_features(space_mining_calc_ui PRIVATE cxx_std_26)
-target_link_libraries(space_mining_calc_ui
+add_executable(smc_ui
+        src/main.cpp
+        src/platform.hpp
+        src/platform.cpp
+        src/calculator.hpp
+        src/calculator.cpp
+)
+target_compile_features(smc_ui PRIVATE cxx_std_26)
+target_link_libraries(smc_ui
         PRIVATE
         smc_warnings
         smc_reader
+        smc_report
         imgui
         spdlog::spdlog
 )
 
 if(EMSCRIPTEN)
-    set_target_properties(space_mining_calc_ui PROPERTIES SUFFIX ".html")
-    target_link_options(space_mining_calc_ui
+    # smc_ui.html with smc_ui.js and smc_ui.wasm next to it.
+    set_target_properties(smc_ui PROPERTIES SUFFIX ".html")
+    target_link_options(smc_ui
             PRIVATE
             -sALLOW_MEMORY_GROWTH=1
             -sMIN_WEBGL_VERSION=2
             -sMAX_WEBGL_VERSION=2
-            --shell-file
-            ${imgui_SOURCE_DIR}/examples/libs/emscripten/shell_minimal.html
+            --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/shell.html
     )
+    set_property(TARGET smc_ui APPEND PROPERTY LINK_DEPENDS
+            ${CMAKE_CURRENT_SOURCE_DIR}/shell.html)
 endif()

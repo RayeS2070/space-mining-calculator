@@ -33,7 +33,7 @@ include(cmake/CPM.cmake)
 
 # Only the Boost libraries we use are configured:
 # the full superproject has dozens.
-# json reads data/asteroids.json.
+# json reads data/asteroids.json and writes the --json answers.
 set(BOOST_INCLUDE_LIBRARIES program_options json)
 # Boost.Container (under Boost.JSON) header-only: its compiled part has pool
 # resources JSON does not use, and one of them does not build for the
@@ -58,18 +58,21 @@ target_compile_options(smc_warnings INTERFACE
 
 add_subdirectory(core)
 add_subdirectory(reader)
+add_subdirectory(report)
 
 # The command line tool needs a terminal: not for the browser.
 if(NOT EMSCRIPTEN)
-        add_executable(smc src/main.cpp)
+        add_executable(smc src/main.cpp src/json.hpp src/json.cpp)
         target_compile_features(smc PRIVATE cxx_std_26)
         target_link_libraries(smc
-            PRIVATE
-            smc_warnings
-            smc_reader
-            Boost::program_options
-            spdlog::spdlog
-    )
+                PRIVATE
+                smc_warnings
+                smc_reader
+                smc_report
+                Boost::program_options
+                Boost::json
+                spdlog::spdlog
+        )
 endif()
 
 add_subdirectory(ui)

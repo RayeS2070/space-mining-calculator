@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Space mining calculator</title>
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #1a1a1f; }
+      canvas { display: block; }
+      canvas:focus { outline: none; }
+    </style>
+  </head>
+  <body>
+    <!-- SDL fills the page with it (SDL_WINDOW_FILL_DOCUMENT). -->
+    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+    <script>
+      var Module = { canvas: document.getElementById("canvas") };
+    </script>
+    {{{ SCRIPT }}}
+  </body>
+</html>

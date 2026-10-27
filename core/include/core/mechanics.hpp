@@ -46,6 +46,10 @@ auto recipeTime(int duration, int plasmaTier, double overdrive) -> int;
 // one value more than its chance and the last one value less.
 auto outputHits(std::span<const Output> outputs) -> std::vector<int>;
 
+// The share of the draws that yields each output, 0..1: outputHits over
+// their sum.
+auto outputShares(std::span<const Output> outputs) -> std::vector<double>;
+
 // Expected draws per parallel: minSize always, the rest with the bonus chance.
 auto expectedDraws(const Recipe& recipe, int bonusChance) -> double;
 

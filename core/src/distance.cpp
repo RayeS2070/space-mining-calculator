@@ -14,13 +14,14 @@ namespace core {
 
 namespace {
 
-// Σ w·t of the asteroids reachable at the distance. Exact in integers, so
-// equal distances compare equal and plateaus come out whole.
-auto weightedTime(std::span<const Asteroid> asteroids, int distance)
-    -> std::int64_t {
+// Σ w·t of the asteroids the module allows, reachable at the distance.
+// Exact in integers, so equal distances compare equal and plateaus come out
+// whole.
+auto weightedTime(std::span<const Asteroid> asteroids, const MinerModule& miner,
+                  int distance) -> std::int64_t {
   std::int64_t sum = 0;
   for (const Asteroid& a : asteroids) {
-    if (isReachable(a, distance)) {
+    if (fitsModule(a, miner) && isReachable(a, distance)) {
       sum += static_cast<std::int64_t>(a.weight) * a.duration;
     }
   }
@@ -101,22 +102,42 @@ auto commonDroneTiers(std::span<const Asteroid> asteroids,
   return common;
 }
 
-auto isMinable(const Asteroid& asteroid, const MinerModule& miner,
-               const DroneSet& drones) -> bool {
+auto fitsModule(const Asteroid& asteroid, const MinerModule& miner) -> bool {
+  return asteroid.minModuleTier <= miner.tier;
+}
+
+auto canMine(const Asteroid& asteroid, const MinerModule& miner,
+             const DroneSet& drones) -> std::expected<void, Unminable> {
+  if (!fitsModule(asteroid, miner)) {
+    return std::unexpected(Unminable::moduleTier);
+  }
+  // isCandidate decides, so the answer cannot drift from it; with the module
+  // tier passed and a drone given, only the voltage is left to fail.
   const Settings settings{.distance = asteroid.minDistance, .drones = drones};
-  return std::ranges::any_of(expand(asteroid, 0), [&](const Recipe& r) {
-    return isCandidate(r, miner, settings);
-  });
+  bool anyDrone = false;
+  for (const Recipe& r : expand(asteroid, 0)) {
+    if (!drones.test(static_cast<std::size_t>(r.droneTier))) continue;
+    anyDrone = true;
+    if (isCandidate(r, miner, settings)) return {};
+  }
+  return std::unexpected(anyDrone ? Unminable::voltage : Unminable::noDrone);
 }
 
 auto bestDistances(std::span<const Asteroid> asteroids,
-                   std::span<const std::size_t> targets)
+                   std::span<const std::size_t> targets,
+                   const MinerModule& miner)
     -> std::expected<std::vector<DistanceRange>, DistanceError> {
   const auto common = commonDistanceRange(asteroids, targets);
   if (!common) return std::unexpected(common.error());
+  for (const std::size_t i : targets) {
+    if (!fitsModule(asteroids[i], miner)) {
+      return std::unexpected(DistanceError::notMinable);
+    }
+  }
 
-  return leastTime(
-      *common, [&](int distance) { return weightedTime(asteroids, distance); });
+  return leastTime(*common, [&](int distance) {
+    return weightedTime(asteroids, miner, distance);
+  });
 }
 
 auto bestDistances(std::span<const Asteroid> asteroids,
@@ -126,7 +147,7 @@ auto bestDistances(std::span<const Asteroid> asteroids,
   const auto common = commonDistanceRange(asteroids, targets);
   if (!common) return std::unexpected(common.error());
   for (const std::size_t i : targets) {
-    if (!isMinable(asteroids[i], miner, settings.drones)) {
+    if (!canMine(asteroids[i], miner, settings.drones)) {
       return std::unexpected(DistanceError::notMinable);
     }
   }

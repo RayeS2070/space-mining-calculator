@@ -95,6 +95,18 @@ auto outputHits(std::span<const Output> outputs) -> std::vector<int> {
   return hits;
 }
 
+auto outputShares(std::span<const Output> outputs) -> std::vector<double> {
+  const std::vector<int> hits = outputHits(outputs);
+  int total = 0;
+  for (const int h : hits) total += h;
+  std::vector<double> shares;
+  shares.reserve(hits.size());
+  for (const int h : hits) {
+    shares.push_back(total > 0 ? static_cast<double>(h) / total : 0.0);
+  }
+  return shares;
+}
+
 auto expectedDraws(const Recipe& recipe, int bonusChance) -> double {
   return recipe.minSize +
          (recipe.maxSize - recipe.minSize) * (bonusChance / 10000.0);
