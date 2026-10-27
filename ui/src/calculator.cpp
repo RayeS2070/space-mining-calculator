@@ -130,10 +130,8 @@ auto Calculator::draw() -> void {
   drawTargets();
   drawAnswer();
   ImGui::Spacing();
-  disabledText(std::format(
-      "{} asteroids from GT5U {}, read from the mod's source and not checked "
-      "in game.",
-      catalog_.asteroids.size(), catalog_.gt5uVersion));
+  disabledText(std::format("{} asteroids from GT5U {}.",
+                           catalog_.asteroids.size(), catalog_.gt5uVersion));
   ImGui::EndChild();
 
   ImGui::SameLine();

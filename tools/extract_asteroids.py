@@ -8,7 +8,10 @@ entry per asteroid with the values as passed to the call: the per drone tier exp
 Only expression forms seen in the source are understood; anything else stops the script with
 the offending expression, so a GT5U update can never be extracted silently wrong.
 
-    tools/extract_asteroids.py [--gt5u ../gt5unofficial] [--out data/asteroids.json]
+    tools/extract_asteroids.py [--gt5u ../sources/GT5-Unofficial] [--out data/asteroids.json]
+
+The GT5U source comes from the repository's tools/mod-source.py, at the version the modpack
+ships: run `tools/mod-source.py GT5-Unofficial` from the repository root first.
 """
 
 import argparse
@@ -237,9 +240,13 @@ def git_describe(path):
 def main():
     here = pathlib.Path(__file__).resolve().parent.parent
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument('--gt5u', type=pathlib.Path, default=here.parent / 'gt5unofficial')
+    parser.add_argument('--gt5u', type=pathlib.Path,
+                        default=here.parent / 'sources' / 'GT5-Unofficial')
     parser.add_argument('--out', type=pathlib.Path, default=here / 'data' / 'asteroids.json')
     args = parser.parse_args()
+    if not (args.gt5u / RECIPES).is_file():
+        sys.exit(f'extract_asteroids: no GT5U source in {args.gt5u}; from the repository root '
+                 f'run tools/mod-source.py GT5-Unofficial')
     try:
         data = extract(args.gt5u)
     except ExtractError as e:

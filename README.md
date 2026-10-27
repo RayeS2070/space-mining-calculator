@@ -22,7 +22,8 @@ The math comes in two stages:
 ## How the module works
 
 Read from `TileEntityModuleMiner.java` and `SpaceMiningRecipes.java` in
-[GT5-Unofficial](../gt5unofficial). Not verified in game.
+[GT5-Unofficial](https://github.com/GTNewHorizons/GT5-Unofficial) at tag 5.09.51.482, the version GTNH 2.8.4 ships. For that
+version the asteroid data is the mod's own; the mechanics below are our reading of its code.
 
 **Recipes.** Each asteroid becomes one recipe per drone tier from `droneTiers[0]` to
 `droneTiers[1]`. With `k` = drone tier index − start index:
@@ -135,7 +136,17 @@ one library (`report`).
 it by hand:
 
 ```sh
-tools/extract_asteroids.py            # reads ../gt5unofficial, writes data/asteroids.json
+../tools/mod-source.py GT5-Unofficial   # once: ../sources/GT5-Unofficial at the modpack's GT5U
+tools/extract_asteroids.py              # reads it, writes data/asteroids.json
+```
+
+`mod-source.py` belongs to the gtnh-automation repository this project lives in: it clones the
+mod at the version the modpack ships. Without it, clone GT5-Unofficial at the tag anywhere and
+pass `--gt5u <path>`:
+
+```sh
+git clone --depth 1 --branch 5.09.51.482 https://github.com/GTNewHorizons/GT5-Unofficial /tmp/gt5u
+tools/extract_asteroids.py --gt5u /tmp/gt5u
 ```
 
 The script understands only the expression forms the source uses today. If an update brings a
@@ -160,8 +171,9 @@ file instead: `smc --data path/to/asteroids.json`.
 | `weight` | Recipe weight for the random pick |
 | `requiresMod` | Present when the asteroid exists only with that mod |
 
-The top-level `source.gt5u` records the GT5U version the data comes from. The game server may
-run a different version: check before trusting the numbers.
+The top-level `source.gt5u` records the GT5U version the data comes from: 5.09.51.482, the one
+in GTNH 2.8.4. Another modpack version may ship another GT5U, with other numbers: move the
+modpack to that release, rerun `../tools/mod-source.py GT5-Unofficial`, then the script.
 
 ## Build
 
