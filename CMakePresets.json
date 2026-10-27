@@ -95,7 +95,7 @@
       }
     },
     {
-      "name": "linux_gcc_debug",
+      "name": "gcc_debug",
       "displayName": "linux-gcc-debug",
       "inherits": [
         "linux",
@@ -104,7 +104,7 @@
       ]
     },
     {
-      "name": "linux_gcc_release",
+      "name": "gcc_release",
       "displayName": "linux-gcc-release",
       "inherits": [
         "linux",
@@ -113,7 +113,7 @@
       ]
     },
     {
-      "name": "linux_clang_debug",
+      "name": "clang_debug",
       "displayName": "linux-clang-debug",
       "inherits": [
         "linux",
@@ -122,7 +122,7 @@
       ]
     },
     {
-      "name": "linux_clang_release",
+      "name": "clang_release",
       "displayName": "linux-clang-release",
       "inherits": [
         "linux",
@@ -131,7 +131,7 @@
       ]
     },
     {
-      "name": "linux_clang_asan",
+      "name": "clang_asan",
       "displayName": "linux-clang-asan",
       "inherits": [
         "linux",
@@ -167,36 +167,36 @@
       }
     },
     {
-      "name": "linux_gcc_debug",
-      "configurePreset": "linux_gcc_debug",
+      "name": "gcc_debug",
+      "configurePreset": "gcc_debug",
       "inherits": [
         "linux"
       ]
     },
     {
-      "name": "linux_gcc_release",
-      "configurePreset": "linux_gcc_release",
+      "name": "gcc_release",
+      "configurePreset": "gcc_release",
       "inherits": [
         "linux"
       ]
     },
     {
       "name": "linux_clang_debug",
-      "configurePreset": "linux_clang_debug",
+      "configurePreset": "clang_debug",
       "inherits": [
         "linux"
       ]
     },
     {
-      "name": "linux_clang_release",
-      "configurePreset": "linux_clang_release",
+      "name": "clang_release",
+      "configurePreset": "clang_release",
       "inherits": [
         "linux"
       ]
     },
     {
-      "name": "linux_clang_asan",
-      "configurePreset": "linux_clang_asan",
+      "name": "clang_asan",
+      "configurePreset": "clang_asan",
       "inherits": [
         "linux"
       ]
@@ -224,36 +224,36 @@
       }
     },
     {
-      "name": "linux_gcc_debug",
-      "configurePreset": "linux_gcc_debug",
+      "name": "gcc_debug",
+      "configurePreset": "gcc_debug",
       "inherits": [
         "linux"
       ]
     },
     {
-      "name": "linux_gcc_release",
-      "configurePreset": "linux_gcc_release",
+      "name": "gcc_release",
+      "configurePreset": "gcc_release",
       "inherits": [
         "linux"
       ]
     },
     {
-      "name": "linux_clang_debug",
-      "configurePreset": "linux_clang_debug",
+      "name": "clang_debug",
+      "configurePreset": "clang_debug",
       "inherits": [
         "linux"
       ]
     },
     {
-      "name": "linux_clang_release",
-      "configurePreset": "linux_clang_release",
+      "name": "clang_release",
+      "configurePreset": "clang_release",
       "inherits": [
         "linux"
       ]
     },
     {
-      "name": "linux_clang_asan",
-      "configurePreset": "linux_clang_asan",
+      "name": "clang_asan",
+      "configurePreset": "clang_asan",
       "inherits": [
         "linux"
       ]
