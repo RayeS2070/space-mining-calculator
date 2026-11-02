@@ -1,7 +1,7 @@
 {
   "source": {
     "file": "src/main/java/gtnhintergalactic/recipe/SpaceMiningRecipes.java",
-    "gt5u": "5.09.51.482"
+    "gt5u": "5.09.54.264"
   },
   "droneTiers": [
     "LV",
@@ -807,6 +807,12 @@
           "prefix": "oreEndstone",
           "amount": 64,
           "chance": 3000
+        },
+        {
+          "name": "Apatite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
         }
       ],
       "minSize": 20,
@@ -821,6 +827,97 @@
       "droneTiers": [
         "IV",
         "UIV"
+      ],
+      "weight": 150
+    },
+    {
+      "name": "spaceOreAsteroid",
+      "outputs": [
+        {
+          "name": "MeteoricIron",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "DeepIron",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Mytryl",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "BlackPlutonium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 1000
+        },
+        {
+          "name": "CallistoIce",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Ledox",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Alduorite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Rubracium",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Vulcanite",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Vyroxeres",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Ceruclase",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Orichalcum",
+          "prefix": "oreEndstone",
+          "amount": 64,
+          "chance": 3000
+        }
+      ],
+      "minSize": 20,
+      "maxSize": 50,
+      "minDistance": 30,
+      "maxDistance": 100,
+      "computation": 60,
+      "minModuleTier": 1,
+      "duration": 500,
+      "eut": 30720,
+      "scaleEUt": true,
+      "droneTiers": [
+        "LuV",
+        "UV"
       ],
       "weight": 150
     },
@@ -1225,6 +1322,55 @@
       "weight": 150
     },
     {
+      "name": "NetherOreAsteroid",
+      "outputs": [
+        {
+          "name": "NetherQuartz",
+          "prefix": "oreNetherrack",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "Sulfur",
+          "prefix": "oreNetherrack",
+          "amount": 64,
+          "chance": 3000
+        },
+        {
+          "name": "CertusQuartz",
+          "prefix": "oreNetherrack",
+          "amount": 64,
+          "chance": 2000
+        },
+        {
+          "name": "Quartzite",
+          "prefix": "oreNetherrack",
+          "amount": 64,
+          "chance": 1500
+        },
+        {
+          "name": "Firestone",
+          "prefix": "oreNetherrack",
+          "amount": 64,
+          "chance": 500
+        }
+      ],
+      "minSize": 30,
+      "maxSize": 110,
+      "minDistance": 10,
+      "maxDistance": 100,
+      "computation": 240,
+      "minModuleTier": 1,
+      "duration": 1000,
+      "eut": 7680,
+      "scaleEUt": true,
+      "droneTiers": [
+        "EV",
+        "ZPM"
+      ],
+      "weight": 150
+    },
+    {
       "name": "europiumAsteroid",
       "outputs": [
         {
@@ -1442,7 +1588,7 @@
           "chance": 500
         },
         {
-          "name": "HeeEndium",
+          "name": "Endium",
           "prefix": "oreEndstone",
           "amount": 64,
           "chance": 98
@@ -1606,7 +1752,7 @@
       "minDistance": 25,
       "maxDistance": 200,
       "computation": 360,
-      "minModuleTier": 3,
+      "minModuleTier": 2,
       "duration": 500,
       "eut": 122880,
       "scaleEUt": true,

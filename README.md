@@ -22,7 +22,7 @@ The math comes in two stages:
 ## How the module works
 
 Read from `TileEntityModuleMiner.java` and `SpaceMiningRecipes.java` in
-[GT5-Unofficial](https://github.com/GTNewHorizons/GT5-Unofficial) at tag 5.09.51.482, the version GTNH 2.8.4 ships. For that
+[GT5-Unofficial](https://github.com/GTNewHorizons/GT5-Unofficial) at tag 5.09.54.264, the version GTNH 2.9.0 ships. For that
 version the asteroid data is the mod's own; the mechanics below are our reading of its code.
 
 **Recipes.** Each asteroid becomes one recipe per drone tier from `droneTiers[0]` to
@@ -48,8 +48,8 @@ version the asteroid data is the mod's own; the mechanics below are our reading 
 4. `maxSize · P` draws are made. The first `minSize · P` always happen; each further one
    happens with the bonus chance `min((T/6)³ · (2 − overdrive), 0.75)`, where T is the plasma
    tier 1–5. The game keeps the chance as a whole number out of 10000, rounded down. A draw
-   yields output j with probability `chance_j / Σ chance` (the first output gets 1 more, the
-   last 1 less, out of Σ chance); the sum is not always 10000.
+   yields output j with probability `chance_j / Σ chance`; the sum is not always 10000. (GTNH
+   2.8.4 gave the first output 1 more and the last 1 less, out of Σ chance.)
 5. Time = `duration · max((1 − 0.1 · (T − 1)) / overdrive, 0.5)` ticks, rounded down. An
    overdrive of 0 passes the game's check but gives an infinite time.
 6. Plasma per parallel: 825 / 550 / 375 / 250 / 150 mB of helium / bismuth / radon /
@@ -88,7 +88,7 @@ least (see the long-run rate above). Tier names are case-insensitive.
 
 `--module-tier` (1 to 3, default 3) is the mining module's tier: asteroids above it are never
 picked, and with `--drones` neither are recipes over the module's voltage. It matters: for
-magnesium a T1 module does best at 181-200, a T2 or T3 one at 13-16. A target the module cannot
+salt a T1 module does best at 241-250, a T2 or T3 one at 1. A target the module cannot
 mine is an error that names why (module tier, drones or voltage).
 
 Without `--drones` the answer is a rough estimate: each asteroid the module tier allows counts
@@ -145,7 +145,7 @@ mod at the version the modpack ships. Without it, clone GT5-Unofficial at the ta
 pass `--gt5u <path>`:
 
 ```sh
-git clone --depth 1 --branch 5.09.51.482 https://github.com/GTNewHorizons/GT5-Unofficial /tmp/gt5u
+git clone --depth 1 --branch 5.09.54.264 https://github.com/GTNewHorizons/GT5-Unofficial /tmp/gt5u
 tools/extract_asteroids.py --gt5u /tmp/gt5u
 ```
 
@@ -171,8 +171,8 @@ file instead: `smc --data path/to/asteroids.json`.
 | `weight` | Recipe weight for the random pick |
 | `requiresMod` | Present when the asteroid exists only with that mod |
 
-The top-level `source.gt5u` records the GT5U version the data comes from: 5.09.51.482, the one
-in GTNH 2.8.4. Another modpack version may ship another GT5U, with other numbers: move the
+The top-level `source.gt5u` records the GT5U version the data comes from: 5.09.54.264, the one
+in GTNH 2.9.0. Another modpack version may ship another GT5U, with other numbers: move the
 modpack to that release, rerun `../tools/mod-source.py GT5-Unofficial`, then the script.
 
 ## Build

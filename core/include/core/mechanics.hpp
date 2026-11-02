@@ -42,8 +42,10 @@ auto bonusChance(int plasmaTier, double overdrive) -> int;
 auto recipeTime(int duration, int plasmaTier, double overdrive) -> int;
 
 // How many of the values of nextInt(Σ chance) select each output. The game
-// picks the first j with random <= Σ_{i<=j} chance_i, so the first output gets
-// one value more than its chance and the last one value less.
+// subtracts chance_j from random until it goes below 0, so each output takes
+// exactly its chance. (GT5U 5.09.51.482, GTNH 2.8.4, picked the first j with
+// random <= Σ_{i<=j} chance_i: the first output one value more, the last one
+// less.)
 auto outputHits(std::span<const Output> outputs) -> std::vector<int>;
 
 // The share of the draws that yields each output, 0..1: outputHits over

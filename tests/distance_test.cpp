@@ -294,13 +294,15 @@ TEST_F(EmbeddedCatalog, Salt) {
   EXPECT_EQ(best("saltAsteroid"), (Ranges{{.min = 1, .max = 1}}));
 }
 
+// 13..16 until GTNH 2.9: NetherOreAsteroid (10..100, weight 150, 1000 ticks)
+// came with it and outweighs the rest there.
 TEST_F(EmbeddedCatalog, Magnesium) {
-  EXPECT_EQ(best("magnesiumAsteroid"), (Ranges{{.min = 13, .max = 16}}));
+  EXPECT_EQ(best("magnesiumAsteroid"), (Ranges{{.min = 181, .max = 200}}));
 }
 
 // Every asteroid near 13..16 is T1. At 181..200 silicon, draconic, cheese and
-// lanthanum need T2, platlinePure and draconicCoreRuin T3: a T1 module never
-// picks them, and the rest there weighs less.
+// lanthanum need T2 (platlinePure too, since 2.9), draconicCoreRuin T3: a T1
+// module never picks them, and the rest there weighs less.
 TEST_F(EmbeddedCatalog, MagnesiumT1) {
   EXPECT_EQ(best("magnesiumAsteroid", {.tier = 1}),
             (Ranges{{.min = 181, .max = 200}}));

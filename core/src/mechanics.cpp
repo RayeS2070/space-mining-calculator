@@ -80,18 +80,9 @@ auto recipeTime(int duration, int plasmaTier, double overdrive) -> int {
 }
 
 auto outputHits(std::span<const Output> outputs) -> std::vector<int> {
-  int total = 0;
-  for (const Output& o : outputs) total += o.chance;
   std::vector<int> hits;
   hits.reserve(outputs.size());
-  int cumulative = 0;
-  int previous = -1;  // the last random value already taken
-  for (const Output& o : outputs) {
-    cumulative += o.chance;
-    const int last = std::min(cumulative, total - 1);
-    hits.push_back(std::max(last - previous, 0));
-    previous = std::max(previous, last);
-  }
+  for (const Output& o : outputs) hits.push_back(std::max(o.chance, 0));
   return hits;
 }
 

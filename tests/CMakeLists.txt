@@ -7,7 +7,7 @@ CPMAddPackage(URI "gh:google/googletest#v1.18.0"
 )
 include(GoogleTest)
 
-add_executable(smc_tests distance_test.cpp report_test.cpp)
+add_executable(smc_tests distance_test.cpp mechanics_test.cpp report_test.cpp)
 target_link_libraries(smc_tests
         PRIVATE
         smc_warnings
