@@ -249,4 +249,4 @@ python3 -m http.server -d install/wasm/wasm_release
 
 ## License
 
-[Apache License 2.0](../LICENSE)
+[GNU General Public License v3.0](LICENSE)
